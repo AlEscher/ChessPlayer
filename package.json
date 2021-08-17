@@ -21,7 +21,13 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "linebreak-style": "off",
+      "indent": "off",
+      "brace-style": "off",
+      "react/jsx-filename-extension": "off"
+    }
   },
   "browserslist": {
     "production": [
