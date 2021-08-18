@@ -12,3 +12,12 @@ export default function ChessBoard() {
         <div>{ chessboard }</div>
     );
 }
+
+export function setupChessboard() {
+    const tiles = document.getElementsByClassName("tile");
+    const piece = document.createElement("p");
+    piece.innerText = "Hi";
+    piece.draggable = true;
+    piece.classList.add("piece");
+    tiles[2].appendChild(piece);
+}

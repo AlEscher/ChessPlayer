@@ -1,6 +1,7 @@
 import React from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import PropTypes from 'prop-types';
+import { getTileColor, getTileId } from '../../helpers';
 
 export default function TileRow(props)
 {
@@ -9,11 +10,12 @@ export default function TileRow(props)
     {
         // In row 0, 2, 4, etc... the tile in column 0, 2, 4, etc... has to be white
         const tileClass = getTileColor(props.row, j);
+        const tileId = getTileId(props.row, j);
 
         // Fix error message about duplicate keys
         const tileKey = props.row.toString() + j.toString();
         tileRow.push(
-            <div className={tileClass} key={tileKey} />,
+            <div className={tileClass} key={tileKey} id={tileId} />,
         );
     }
 
@@ -30,29 +32,3 @@ TileRow.defaultProps = {
 TileRow.propTypes = {
     row: PropTypes.number,
 };
-
-function getTileColor(row, column)
-{
-    let tileClass = "tile ";
-    if (row % 2 === 0)
-    {
-        if (column % 2 === 0)
-        {
-            tileClass += "white-tile"; // Row and column index are even
-        }
-        else
-        {
-            tileClass += "black-tile"; // Row index is even, column index is uneven
-        }
-    }
-    else if (column % 2 !== 0)
-    {
-        tileClass += "white-tile"; // Row and colum index are uneven
-    }
-    else
-    {
-        tileClass += "black-tile"; // Row index is uneven, column index is even
-    }
-
-    return tileClass;
-}
