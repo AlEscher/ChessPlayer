@@ -10,6 +10,8 @@ div.tile {
     display: inline-block;
     text-align:center;
     position:relative;
+    border:none;
+    box-sizing: border-box;
 }
 
 div.tile.white-tile {
