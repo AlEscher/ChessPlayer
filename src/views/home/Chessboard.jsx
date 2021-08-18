@@ -6,7 +6,7 @@ export default function ChessBoard() {
 
     for (let i = 0; i < 8; i++)
     {
-       chessboard.push(<TileRow row={i} />);
+       chessboard.push(<TileRow row={i} key={i} />);
     }
     return (
         <div>{ chessboard }</div>
