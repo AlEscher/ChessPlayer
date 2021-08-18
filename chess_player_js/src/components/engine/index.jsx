@@ -3,12 +3,23 @@ import { useEvent } from '../../hooks';
 
 export default function Engine() {
     const handleDragOver = (e) => {
-        // Prevent default browser behaviour do allow drag
+        // Prevent default browser behaviour to allow drop
         e.preventDefault();
+        console.log(`Drag over: ${e.target.id}`);
     };
     const handleDragStart = (e) => {
+        console.log(`Drag start: ${e.target.id}`);
+        console.log(`Drag start: ${e.target}`);
         // Add the id of the piece that the user just grabbed
-        e.dataTransfer.setData("Text", e.target.id);
+        if (e.target.className === "piece")
+        {
+            e.dataTransfer.setData("Text", e.target.id);
+        }
+        else
+        {
+            // Prevent tiles etc... from being dragged (draggable="false" does not work)
+            e.preventDefault();
+        }
     };
     const handleDragEnter = (e) => {
         if (e.target.classList.length > 0 && e.target.classList[0] === "tile") {

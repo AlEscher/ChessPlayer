@@ -15,7 +15,7 @@ export default function TileRow(props)
         // Fix error message about duplicate keys
         const tileKey = props.row.toString() + j.toString();
         tileRow.push(
-            <div className={tileClass} key={tileKey} id={tileId} />,
+            <div className={tileClass} key={tileKey} id={tileId} draggable="false" />,
         );
     }
 
