@@ -1,0 +1,15 @@
+div.tile {
+    width: 100px;
+    height: 100px;
+    margin: 0;
+    padding: 0px 0px;
+    display: inline-block;
+}
+
+div.tile.white-tile {
+    background-color: #f0f0f0;
+}
+
+div.tile.black-tile {
+    background-color: #1f1f1f;
+}

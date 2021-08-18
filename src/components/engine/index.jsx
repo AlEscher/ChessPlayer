@@ -1,9 +1,18 @@
 import React from 'react';
+import { useEvent } from '../../hooks';
 
 export default function Engine() {
-  return (
-    <h1>
-      Chess Player
-    </h1>
-  );
+    const handleKey = (e) => {
+        if (e.key === " ") {
+            console.log("Spacebar pressed!");
+        }
+    };
+
+    useEvent("keyup", handleKey);
+
+    return (
+      <h1>
+          Chess Player
+      </h1>
+    );
 }

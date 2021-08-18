@@ -1,6 +1,9 @@
 import React from 'react';
 import Engine from '../../components/engine';
+import ChessBoard from './Chessboard';
 
-export default function Home() {
-  return (<Engine />);
+export function Home() {
+    return (<Engine />);
 }
+
+export { ChessBoard };
