@@ -2,17 +2,12 @@ import React from 'react';
 import { useEvent } from '../../hooks';
 
 export default function Engine() {
-    const handleKey = (e) => {
-        if (e.key === " ") {
-            console.log("Spacebar pressed!");
-        }
-    };
     const handleDragOver = (e) => {
         // Prevent default browser behaviour do allow drag
         e.preventDefault();
     };
     const handleDragStart = (e) => {
-        console.log(e.target.id);
+        // Add the id of the piece that the user just grabbed
         e.dataTransfer.setData("Text", e.target.id);
     };
     const handleDragEnter = (e) => {
@@ -37,7 +32,6 @@ export default function Engine() {
         }
     };
 
-    useEvent("keyup", handleKey);
     useEvent("dragover", handleDragOver);
     useEvent("dragstart", handleDragStart);
     useEvent("dragenter", handleDragEnter);
