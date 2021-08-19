@@ -1,9 +1,7 @@
-/* eslint-disable import/prefer-default-export */
-import useEvent from './useEvent';
-import {
- handleDragOver, handleDragStart, handleDragEnter, handleDrop, handleDragLeave,
-} from './dragEvents';
+import useEvent from "./useEvent";
+
+export { useEvent };
 
 export {
- useEvent, handleDragOver, handleDragStart, handleDragEnter, handleDrop, handleDragLeave,
-};
+ handleDragOver, handleDragStart, handleDragEnter, handleDrop, handleDragLeave,
+} from "./dragEvents";

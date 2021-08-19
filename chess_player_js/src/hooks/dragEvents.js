@@ -1,3 +1,5 @@
+import getAudioPlayer from "../components/audio";
+
 export function handleDragOver(e) {
     // Prevent default browser behaviour to allow drop
     e.preventDefault();
@@ -34,6 +36,8 @@ export function handleDrop(e) {
         e.target.appendChild(document.getElementById(data));
         // Reset the border of the tile we are dropping the piece into
         e.target.style.border = "";
+        const audioPlayer = getAudioPlayer();
+        audioPlayer.moveSound.audioElement.play();
     }
 }
 
