@@ -1,5 +1,6 @@
 package com.alescher.chessplayerserver.controller;
 
+import com.alescher.chessplayerserver.model.ChessBoard;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -10,18 +11,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ChessplayerController
 {
-	private Logger logger = LoggerFactory.getLogger(ChessplayerController.class);
+	private ChessBoard board = new ChessBoard();
+
+	public static Logger logger = LoggerFactory.getLogger(ChessplayerController.class);
 
 	@PutMapping (path="/make-move", consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
 	public MoveResponseEntity makeMove(@RequestBody MoveRequestEntity moveRequest)
 	{
-		final String fromTile = moveRequest.getFromTile();
-		final String toTile = moveRequest.getToTile();
-		final String pieceID = moveRequest.getPieceID();
 		logger.info("Received move request: " + moveRequest);
+		boolean isLegal = board.isLegalMove(moveRequest.getFromTile(), moveRequest.getToTile());
 
-		final MoveResponseEntity moveResponse = new MoveResponseEntity(fromTile, toTile, pieceID, true);
+		MoveResponseEntity moveResponse = new MoveResponseEntity(moveRequest.getFromTile(), moveRequest.getToTile(),
+				moveRequest.getPieceID(), isLegal);
 		logger.info("Sending move response: " + moveResponse);
+
+		if (isLegal) logger.info(String.valueOf(board));
 
 		return moveResponse;
 	}

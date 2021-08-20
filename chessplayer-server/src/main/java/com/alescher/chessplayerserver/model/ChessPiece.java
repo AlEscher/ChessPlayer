@@ -28,4 +28,6 @@ public interface ChessPiece
 	 * @return A list of all tiles the piece can move to
 	 */
 	List<Point> getLegalMoves(Point moveFrom, ChessPiece[][] gameBoard);
+
+	Color getColor();
 }

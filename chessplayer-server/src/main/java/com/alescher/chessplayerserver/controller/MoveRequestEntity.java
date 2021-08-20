@@ -2,6 +2,8 @@ package com.alescher.chessplayerserver.controller;
 
 /**
  * Represents a move to be made, e.g. to check whether it is a legal move
+ *
+ * @author AlEscher
  */
 public class MoveRequestEntity
 {
