@@ -1,29 +1,26 @@
-import getAudioPlayer from "../components/audio";
+import { movePiece } from "../views/home/Chessboard";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 const $ = require("jquery");
 
-function movePiece(data)
-{
-    // Get the data we added in drag start (the piece's id)
-    if (data.legal)
-    {
-        const sourceId = data.pieceID;
-        const target = document.getElementById(data.toTile);
-        target.appendChild(document.getElementById(sourceId));
-
-        // Play move sound
-        const audioPlayer = getAudioPlayer();
-        audioPlayer.moveSound.audioElement.play();
-    }
-}
-
+/**
+ * A callback function for the "dragover" event.
+ * Prevents the default browser action in order to allow
+ * our chess pieces to be dragged and dropped.
+ * @param {*} e The event that was triggered
+ */
 export function handleDragOver(e) {
     // Prevent default browser behaviour to allow drop
     e.preventDefault();
     console.log(`Drag over: ${e.target.id}`);
 }
 
+/**
+ * A callback function for the "dragstart" event.
+ * Collects and stores data regarding the piece that picked up
+ * and the tile it is being dragged from.
+ * @param {*} e The event that was triggered
+ */
 export function handleDragStart(e) {
     console.log(`Drag start: ${e.target.id}`);
     console.log(`Drag start: ${e.target}`);
@@ -40,12 +37,22 @@ export function handleDragStart(e) {
     }
 }
 
+/**
+ * A callback function for the "dragenter" event.
+ * Adds a red outline to the tile that is currently being hovered.
+ * @param {*} e The event that was triggered
+ */
 export function handleDragEnter(e) {
     if (e.target.classList.length > 0 && e.target.classList[0] === "tile") {
         e.target.style.border = "2px solid red";
     }
 }
 
+/**
+ * A callback function for the "drop" event
+ * Sends a request to the server to validate the move and plays it if the move is valid.
+ * @param {*} e The event that was triggered
+ */
 export function handleDrop(e) {
     e.preventDefault();
     // Check that we are dropping something onto a tile
@@ -64,6 +71,11 @@ export function handleDrop(e) {
     }
 }
 
+/**
+ * A callback function for the "dragleave" event.
+ * Resets the border of the tile that is no longer being hovered.
+ * @param {*} e The event that was triggered
+ */
 export function handleDragLeave(e) {
     if (e.target.classList.length > 0 && e.target.classList[0] === "tile") {
         e.target.style.border = "";

@@ -3,6 +3,10 @@ import {
  useEvent, handleDragOver, handleDragStart, handleDragEnter, handleDragLeave, handleDrop,
 } from '../../hooks';
 
+/**
+ * Sets up our hooks for drag and drop events.
+ * @returns A place holder element for now
+ */
 export default function Engine() {
     // Register our hooks
     useEvent("dragover", handleDragOver);

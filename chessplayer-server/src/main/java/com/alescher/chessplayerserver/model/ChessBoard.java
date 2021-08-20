@@ -64,6 +64,23 @@ public class ChessBoard
 			gameBoard[6][i] = new Pawn(Color.WHITE, Pawn.Direction.UP);
 			gameBoard[1][i] = new Pawn(Color.BLACK, Pawn.Direction.DOWN);
 		}
+		gameBoard[0][0] = new Rook(Color.BLACK);
+		gameBoard[0][1] = new Knight(Color.BLACK);
+		gameBoard[0][2] = new Bishop(Color.BLACK);
+		gameBoard[0][3] = new King(Color.BLACK);
+		gameBoard[0][4] = new Queen(Color.BLACK);
+		gameBoard[0][5] = new Bishop(Color.BLACK);
+		gameBoard[0][6] = new Knight(Color.BLACK);
+		gameBoard[0][7] = new Rook(Color.BLACK);
+
+		gameBoard[7][0] = new Rook(Color.WHITE);
+		gameBoard[7][1] = new Knight(Color.WHITE);
+		gameBoard[7][2] = new Bishop(Color.WHITE);
+		gameBoard[7][3] = new King(Color.WHITE);
+		gameBoard[7][4] = new Queen(Color.WHITE);
+		gameBoard[7][5] = new Bishop(Color.WHITE);
+		gameBoard[7][6] = new Knight(Color.WHITE);
+		gameBoard[7][7] = new Rook(Color.WHITE);
 	}
 
 	@Override
