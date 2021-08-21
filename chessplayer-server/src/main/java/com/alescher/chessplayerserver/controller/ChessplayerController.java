@@ -25,8 +25,6 @@ public class ChessplayerController
 				moveRequest.getPieceID(), isLegal);
 		logger.info("Sending move response: " + moveResponse);
 
-		if (isLegal) logger.info(String.valueOf(board));
-
 		return moveResponse;
 	}
 }

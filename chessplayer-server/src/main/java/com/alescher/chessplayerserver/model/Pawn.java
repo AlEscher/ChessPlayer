@@ -72,8 +72,6 @@ public class Pawn implements ChessPiece
 			return false;
 		if (gameBoard[to.y][to.x] == null) // We cannot capture on an empty tile
 			return false;
-		if (color.equals(gameBoard[to.y][to.x].getColor())) // Cannot capture same color
-			return false;
 
 		didMove = true;
 		return true; // Legal capture

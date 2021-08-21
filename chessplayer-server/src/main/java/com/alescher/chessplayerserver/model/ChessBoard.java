@@ -32,10 +32,16 @@ public class ChessBoard
 		Point toPoint = ChessPositionConverter.convertTileToPoint(toTile);
 
 		ChessplayerController.logger.info(String.format("Checking move from %s to %s", fromPoint.toString(), toPoint.toString()));
+		// Check bounds
+		if (fromPoint.x > 7 || fromPoint.y > 7 || toPoint.x > 7 || toPoint.y > 7)
+			return false;
 
 		boolean isLegal = isLegalMove(fromPoint, toPoint);
 		if (isLegal)
+		{
 			makeMove(fromPoint, toPoint); // If the move is allowed, update our gameBoard
+			ChessplayerController.logger.info(String.valueOf(gameBoard));
+		}
 
 		return isLegal;
 	}
@@ -45,6 +51,8 @@ public class ChessBoard
 		if (gameBoard[moveFrom.y][moveFrom.x] == null)
 			return false;
 		if (moveFrom.equals(moveTo))
+			return false;
+		if (gameBoard[moveFrom.y][moveFrom.x].getColor().equals(gameBoard[moveTo.y][moveTo.x].getColor()))
 			return false;
 
 		return gameBoard[moveFrom.y][moveFrom.x].isLegalMove(moveFrom, moveTo, gameBoard);

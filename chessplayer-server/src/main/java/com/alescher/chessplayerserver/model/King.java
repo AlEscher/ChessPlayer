@@ -15,7 +15,10 @@ public class King implements ChessPiece
 	@Override
 	public boolean isLegalMove(Point moveFrom, Point moveTo, ChessPiece[][] gameBoard)
 	{
-		return false;
+		if (Math.abs(moveFrom.x - moveTo.x) > 1 || Math.abs(moveFrom.y - moveTo.y) > 1)
+			return false;
+
+		return true;
 	}
 
 	@Override
