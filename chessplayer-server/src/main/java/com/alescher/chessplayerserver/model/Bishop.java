@@ -1,5 +1,7 @@
 package com.alescher.chessplayerserver.model;
 
+import com.alescher.chessplayerserver.helper.BoardUtility;
+
 import java.awt.Point;
 import java.util.List;
 
@@ -15,7 +17,12 @@ public class Bishop implements ChessPiece
 	@Override
 	public boolean isLegalMove(Point moveFrom, Point moveTo, ChessPiece[][] gameBoard)
 	{
-		return false;
+		if (Math.abs(moveFrom.x - moveTo.x) != Math.abs(moveFrom.y - moveTo.y)) // Check diagonal
+			return false;
+		if (!BoardUtility.checkPathUnobstructed(moveFrom, moveTo, gameBoard))
+			return false;
+
+		return true;
 	}
 
 	@Override

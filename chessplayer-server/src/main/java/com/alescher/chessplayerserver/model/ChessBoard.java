@@ -1,6 +1,7 @@
 package com.alescher.chessplayerserver.model;
 
 import com.alescher.chessplayerserver.controller.ChessplayerController;
+import com.alescher.chessplayerserver.helper.BoardUtility;
 import com.alescher.chessplayerserver.helper.ChessPositionConverter;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,7 +41,7 @@ public class ChessBoard
 		if (isLegal)
 		{
 			makeMove(fromPoint, toPoint); // If the move is allowed, update our gameBoard
-			ChessplayerController.logger.info(String.valueOf(gameBoard));
+			ChessplayerController.logger.info(String.valueOf(this));
 		}
 
 		return isLegal;
@@ -52,7 +53,7 @@ public class ChessBoard
 			return false;
 		if (moveFrom.equals(moveTo))
 			return false;
-		if (gameBoard[moveFrom.y][moveFrom.x].getColor().equals(gameBoard[moveTo.y][moveTo.x].getColor()))
+		if (BoardUtility.checkFriendlyFire(moveFrom, moveTo, gameBoard))
 			return false;
 
 		return gameBoard[moveFrom.y][moveFrom.x].isLegalMove(moveFrom, moveTo, gameBoard);
