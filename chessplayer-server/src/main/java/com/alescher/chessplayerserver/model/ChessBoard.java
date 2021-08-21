@@ -34,15 +34,11 @@ public class ChessBoard
 
 		ChessplayerController.logger.info(String.format("Checking move from %s to %s", fromPoint.toString(), toPoint.toString()));
 		// Check bounds
-		if (fromPoint.x > 7 || fromPoint.y > 7 || toPoint.x > 7 || toPoint.y > 7)
+		if (!BoardUtility.checkBounds(fromPoint) || !BoardUtility.checkBounds(toPoint))
 			return false;
 
 		boolean isLegal = isLegalMove(fromPoint, toPoint);
-		if (isLegal)
-		{
-			makeMove(fromPoint, toPoint); // If the move is allowed, update our gameBoard
-			ChessplayerController.logger.info(String.valueOf(this));
-		}
+		if (isLegal) makeMove(fromPoint, toPoint); // If the move is allowed, update our gameBoard
 
 		return isLegal;
 	}
@@ -64,6 +60,7 @@ public class ChessBoard
 		// TODO: Handle capture (points update, etc...)
 		gameBoard[to.y][to.x] = gameBoard[from.y][from.x];
 		gameBoard[from.y][from.x] = null;
+		ChessplayerController.logger.info(String.valueOf(this));
 	}
 
 	private void setupBoard()

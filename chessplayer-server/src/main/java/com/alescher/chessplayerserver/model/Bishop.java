@@ -17,7 +17,7 @@ public class Bishop implements ChessPiece
 	@Override
 	public boolean isLegalMove(Point moveFrom, Point moveTo, ChessPiece[][] gameBoard)
 	{
-		if (Math.abs(moveFrom.x - moveTo.x) != Math.abs(moveFrom.y - moveTo.y)) // Check diagonal
+		if (!BoardUtility.isDiagonal(moveFrom, moveTo))
 			return false;
 		if (!BoardUtility.checkPathUnobstructed(moveFrom, moveTo, gameBoard))
 			return false;

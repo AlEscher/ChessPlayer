@@ -51,4 +51,36 @@ public class BoardUtility
 
 		return false;
 	}
+
+	/**
+	 * Checks whether a given point is within the bounds of our chessboard
+	 * @param pt The point to check
+	 * @return True if the point is within the bounds of a chessboard, false otherwise
+	 */
+	public static boolean checkBounds(Point pt)
+	{
+		return pt.x >= 0 && pt.y >= 0 && pt.x < 8 && pt.y < 8;
+	}
+
+	/**
+	 * Checks if a given move is a diagonal movement
+	 * @param moveFrom Start point
+	 * @param moveTo End point
+	 * @return True if the move is diagonal, false otherwise
+	 */
+	public static boolean isDiagonal(Point moveFrom, Point moveTo)
+	{
+		return Math.abs(moveFrom.x - moveTo.x) == Math.abs(moveFrom.y - moveTo.y);
+	}
+
+	/**
+	 * Checks if a given move is a horizontal or vertical movement
+	 * @param moveFrom Start point
+	 * @param moveTo End point
+	 * @return True if the move is horizontal or vertical, false otherwise
+	 */
+	public static boolean isHorizontalOrVertical(Point moveFrom, Point moveTo)
+	{
+		return moveFrom.x == moveTo.x || moveFrom.y == moveTo.y;
+	}
 }
