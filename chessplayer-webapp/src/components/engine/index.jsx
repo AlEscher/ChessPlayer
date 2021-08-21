@@ -1,6 +1,7 @@
 import React from 'react';
 import {
- useEvent, handleDragOver, handleDragStart, handleDragEnter, handleDragLeave, handleDrop,
+ useEvent, handleDragOver, handleDragStart, handleDragEnter,
+ handleDragLeave, handleDrop, handleClick,
 } from '../../hooks';
 
 /**
@@ -14,6 +15,8 @@ export default function Engine() {
     useEvent("dragenter", handleDragEnter);
     useEvent("dragleave", handleDragLeave);
     useEvent("drop", handleDrop);
+
+    useEvent("mousedown", handleClick);
 
     return (
       <h1>

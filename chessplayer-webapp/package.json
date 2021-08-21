@@ -1,5 +1,5 @@
 {
-  "name": "chess_player_js",
+  "name": "chessplayer-webapp",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

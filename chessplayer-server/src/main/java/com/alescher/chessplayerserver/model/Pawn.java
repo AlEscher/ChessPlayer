@@ -1,6 +1,9 @@
 package com.alescher.chessplayerserver.model;
 
+import com.alescher.chessplayerserver.helper.BoardUtility;
+
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,6 +52,21 @@ public class Pawn implements ChessPiece
 		return false;
 	}
 
+	@Override
+	public List<Point> getLegalMoves(Point moveFrom, ChessPiece[][] gameBoard)
+	{
+		int direction = (this.direction == Direction.DOWN) ? 1 : -1;
+		// All the moves a pawn can generally make
+		List<Point> possibleMoves = new ArrayList<>();
+		possibleMoves.add(new Point(moveFrom.x, moveFrom.y + direction));
+		possibleMoves.add(new Point(moveFrom.x, moveFrom.y + 2 * direction));
+		possibleMoves.add(new Point(moveFrom.x + 1, moveFrom.y + direction));
+		possibleMoves.add(new Point(moveFrom.x - 1, moveFrom.y + direction));
+
+		possibleMoves.removeIf(p -> !BoardUtility.checkBounds(p) || !isLegalMove(p, moveFrom, gameBoard));
+		return possibleMoves;
+	}
+
 	// Checks whether the pawn can move forward, considering the direction he is facing
 	private boolean checkMoveForward(Point from, Point to, ChessPiece[][] gameBoard)
 	{
@@ -75,12 +93,6 @@ public class Pawn implements ChessPiece
 
 		didMove = true;
 		return true; // Legal capture
-	}
-
-	@Override
-	public List<Point> getLegalMoves(Point moveFrom, ChessPiece[][] gameBoard)
-	{
-		return null;
 	}
 
 	@Override

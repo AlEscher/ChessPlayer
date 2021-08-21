@@ -1,6 +1,9 @@
 package com.alescher.chessplayerserver.model;
 
+import com.alescher.chessplayerserver.helper.BoardUtility;
+
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Knight implements ChessPiece
@@ -26,7 +29,19 @@ public class Knight implements ChessPiece
 	@Override
 	public List<Point> getLegalMoves(Point moveFrom, ChessPiece[][] gameBoard)
 	{
-		return null;
+		// All the moves a knight can generally make
+		List<Point> possibleMoves = new ArrayList<>();
+		possibleMoves.add(new Point(moveFrom.x + 2, moveFrom.y + 1));
+		possibleMoves.add(new Point(moveFrom.x + 2, moveFrom.y - 1));
+		possibleMoves.add(new Point(moveFrom.x - 2, moveFrom.y + 1));
+		possibleMoves.add(new Point(moveFrom.x - 2, moveFrom.y - 1));
+		possibleMoves.add(new Point(moveFrom.x + 1, moveFrom.y + 2));
+		possibleMoves.add(new Point(moveFrom.x + 1, moveFrom.y - 2));
+		possibleMoves.add(new Point(moveFrom.x - 1, moveFrom.y + 2));
+		possibleMoves.add(new Point(moveFrom.x - 1, moveFrom.y - 2));
+
+		possibleMoves.removeIf(p -> !BoardUtility.checkBounds(p) || !isLegalMove(p, moveFrom, gameBoard));
+		return possibleMoves;
 	}
 
 	@Override

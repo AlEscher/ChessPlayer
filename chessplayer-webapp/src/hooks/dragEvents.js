@@ -44,7 +44,7 @@ export function handleDragStart(e) {
  */
 export function handleDragEnter(e) {
     if (e.target.classList.length > 0 && e.target.classList[0] === "tile") {
-        e.target.style.border = "2px solid red";
+        e.target.style.border = "2px solid gray";
     }
 }
 
@@ -55,9 +55,13 @@ export function handleDragEnter(e) {
  */
 export function handleDrop(e) {
     e.preventDefault();
-    // Check that we are dropping something onto a tile
-    if (e.target.classList.length > 0 && e.target.classList[0] === "tile") {
-        const data = { fromTile: e.dataTransfer.getData("fromTile"), toTile: e.target.id, pieceID: e.dataTransfer.getData("pieceID") };
+    let targetObj = e.target;
+    // Check that we are dropping something onto a tile or a piece
+    if (e.target.classList.length > 0 && e.target.classList[0] === "tile") targetObj = e.target;
+    else if (e.target.className === "piece") targetObj = e.target.parentElement;
+    else return;
+
+    const data = { fromTile: e.dataTransfer.getData("fromTile"), toTile: targetObj.id, pieceID: e.dataTransfer.getData("pieceID") };
         $.ajax({
             url: "make-move",
             type: "PUT",
@@ -67,8 +71,7 @@ export function handleDrop(e) {
             success: movePiece,
         });
         // Reset the border of the tile we were dropping the piece into
-        e.target.style.border = "";
-    }
+        targetObj.style.border = "";
 }
 
 /**
