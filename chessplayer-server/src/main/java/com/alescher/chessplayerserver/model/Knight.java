@@ -15,6 +15,11 @@ public class Knight implements ChessPiece
 	@Override
 	public boolean isLegalMove(Point moveFrom, Point moveTo, ChessPiece[][] gameBoard)
 	{
+		if (Math.abs(moveFrom.x - moveTo.x) == 2 && Math.abs(moveFrom.y - moveTo.y) == 1)
+			return true;
+		if (Math.abs(moveFrom.x - moveTo.x) == 1 && Math.abs(moveFrom.y - moveTo.y) == 2)
+			return true;
+
 		return false;
 	}
 
