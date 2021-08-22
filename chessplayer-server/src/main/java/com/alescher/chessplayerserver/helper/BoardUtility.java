@@ -3,6 +3,7 @@ package com.alescher.chessplayerserver.helper;
 import com.alescher.chessplayerserver.model.ChessPiece;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,6 +12,52 @@ import java.util.List;
  */
 public class BoardUtility
 {
+	/**
+	 * Given a list of directional vectors, generates all legal moves a piece can make
+	 * @param moveFrom The starting position
+	 * @param directions The directional vectors (of length 1)
+	 * @param piece The piece to be moved
+	 * @param gameBoard The chessboard
+	 * @return A list of all legal generated moves
+	 */
+	public static List<Point> generateLegalMoves(Point moveFrom, List<Point> directions, ChessPiece piece, ChessPiece[][] gameBoard)
+	{
+		List<Point> possibleMoves = new ArrayList<>();
+		// For each directional vector, create new positions until we reach an obstacle
+		for (Point direction : directions)
+		{
+			for (int i = 1; i < gameBoard.length; i++)
+			{
+				// Move a single step in the current direction
+				Point p = new Point(moveFrom.x + i * direction.x, moveFrom.y + i * direction.y);
+				// If we reach an obstacle (out of bounds or friendly piece) then there is no need to continue in this direction
+				if (!BoardUtility.checkBounds(p) || (gameBoard[p.y][p.x] != null && gameBoard[p.y][p.x].getColor() == piece.getColor()))
+				{
+					break;
+				}
+				// If we reach an enemy piece we have reached the last viable position in this direction
+				else if ((gameBoard[p.y][p.x] != null && gameBoard[p.y][p.x].getColor() != piece.getColor()))
+				{
+					possibleMoves.add(p);
+					break;
+				}
+				else
+				{
+					possibleMoves.add(p);
+				}
+			}
+		}
+
+		return possibleMoves;
+	}
+	/**
+	 * Removes all illegal moves from a given set of moves.
+	 * possibleMoves will only contain legal moves after this method is called.
+	 * @param possibleMoves The positions we can move to
+	 * @param piece The piece we want to move
+	 * @param moveFrom The positions we are moving from
+	 * @param gameBoard The chessboard
+	 */
 	public static void removeIllegalMoves(List<Point> possibleMoves, ChessPiece piece, Point moveFrom, ChessPiece[][] gameBoard)
 	{
 		possibleMoves.removeIf(p -> (

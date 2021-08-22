@@ -3,6 +3,7 @@ package com.alescher.chessplayerserver.model;
 import com.alescher.chessplayerserver.helper.BoardUtility;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Bishop implements ChessPiece
@@ -28,7 +29,12 @@ public class Bishop implements ChessPiece
 	@Override
 	public List<Point> getLegalMoves(Point moveFrom, ChessPiece[][] gameBoard)
 	{
-		return null;
+		// Create directional vectors in 4 diagonal directions
+		List<Point> directions = List.of(
+				new Point(1, 1), new Point(1, -1), new Point(-1, 1), new Point(-1, -1)
+		);
+
+		return BoardUtility.generateLegalMoves(moveFrom, directions, this, gameBoard);
 	}
 
 	@Override
