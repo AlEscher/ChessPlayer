@@ -32,4 +32,16 @@ export default function handleClick(e) {
             targetObj.style.border = "";
         }
     }
+    else if (e.button === 0) // Left click
+    {
+        // Reset all tile borders if we click on a tile
+        if (e.target.classList.length > 0 && e.target.classList[0] === "tile")
+        {
+            const tiles = Array.from(document.getElementsByClassName("tile"));
+            tiles.forEach((element) => {
+                // eslint-disable-next-line no-param-reassign
+                element.style.border = "";
+            });
+        }
+    }
 }

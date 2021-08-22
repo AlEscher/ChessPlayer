@@ -12,7 +12,6 @@ const $ = require("jquery");
 export function handleDragOver(e) {
     // Prevent default browser behaviour to allow drop
     e.preventDefault();
-    console.log(`Drag over: ${e.target.id}`);
 }
 
 /**
@@ -22,8 +21,6 @@ export function handleDragOver(e) {
  * @param {*} e The event that was triggered
  */
 export function handleDragStart(e) {
-    console.log(`Drag start: ${e.target.id}`);
-    console.log(`Drag start: ${e.target}`);
     // Add the id of the piece that the user just grabbed
     if (e.target.className === "piece")
     {
