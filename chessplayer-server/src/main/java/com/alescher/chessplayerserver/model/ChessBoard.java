@@ -15,10 +15,12 @@ import java.awt.Point;
 public class ChessBoard
 {
 	private final ChessPiece[][] gameBoard = new ChessPiece[8][8];
+	private Color currentTurn;
 
 	public ChessBoard()
 	{
 		setupBoard();
+		currentTurn = Color.WHITE;
 	}
 
 	/**
@@ -49,12 +51,35 @@ public class ChessBoard
 			return false;
 		if (moveFrom.equals(moveTo))
 			return false;
+		if (!checkTurn(moveFrom))
+			return false;
 		if (BoardUtility.checkFriendlyFire(moveFrom, moveTo, gameBoard))
 			return false;
 
 		return gameBoard[moveFrom.y][moveFrom.x].isLegalMove(moveFrom, moveTo, gameBoard);
 	}
 
+	/**
+	 * Checks that the piece to be moved belongs to the player whose turn it currently is.
+	 * Also updates the currentTurn for the next move.
+	 * @param moveFrom The piece to be moved
+	 * @return True if it's the correct player's turn, false otherwise
+	 */
+	private boolean checkTurn(Point moveFrom)
+	{
+		if (gameBoard[moveFrom.y][moveFrom.x].getColor() != currentTurn)
+			return false;
+
+		currentTurn = (currentTurn == Color.WHITE) ? Color.BLACK : Color.WHITE;
+		return true;
+	}
+
+	/**
+	 * Updates the gameboard by performing the specified move. Also logs the
+	 * updated gameboard to the console.
+	 * @param from The position of the piece to be moved
+	 * @param to The position where the piece should be moved to
+	 */
 	private void makeMove(Point from, Point to)
 	{
 		// TODO: Handle capture (points update, etc...)
