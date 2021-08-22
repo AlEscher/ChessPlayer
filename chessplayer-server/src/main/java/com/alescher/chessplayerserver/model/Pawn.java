@@ -34,6 +34,7 @@ public class Pawn implements ChessPiece
 	@Override
 	public boolean isLegalMove(Point moveFrom, Point moveTo, ChessPiece[][] gameBoard)
 	{
+		updateDidMove(moveFrom);
 		// Check that we are moving in the correct direction
 		if (direction == Direction.DOWN && moveFrom.y >= moveTo.y)
 			return false;
@@ -63,8 +64,8 @@ public class Pawn implements ChessPiece
 		possibleMoves.add(new Point(moveFrom.x + 1, moveFrom.y + direction));
 		possibleMoves.add(new Point(moveFrom.x - 1, moveFrom.y + direction));
 
-		possibleMoves.removeIf(p -> !BoardUtility.checkBounds(p) || !isLegalMove(p, moveFrom, gameBoard));
-		return possibleMoves;
+		possibleMoves.removeIf(p -> (!BoardUtility.checkBounds(p) || !isLegalMove(moveFrom, p, gameBoard)));
+ 		return possibleMoves;
 	}
 
 	// Checks whether the pawn can move forward, considering the direction he is facing
@@ -79,7 +80,6 @@ public class Pawn implements ChessPiece
 		if (gameBoard[to.y][to.x] != null) // Cannot capture when moving forward
 			return false;
 
-		didMove = true;
 		return true; // Legal move forward
 	}
 
@@ -91,8 +91,15 @@ public class Pawn implements ChessPiece
 		if (gameBoard[to.y][to.x] == null) // We cannot capture on an empty tile
 			return false;
 
-		didMove = true;
 		return true; // Legal capture
+	}
+
+	// Check if this pawn has moved before
+	private void updateDidMove(Point moveFrom)
+	{
+		// The row that this pawn was at the beginning of the game
+		int startingRow = (this.direction == Direction.DOWN) ? 1 : 6;
+		this.didMove = moveFrom.y != startingRow;
 	}
 
 	@Override

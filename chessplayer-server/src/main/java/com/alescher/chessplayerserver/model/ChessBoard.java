@@ -6,6 +6,7 @@ import com.alescher.chessplayerserver.helper.ChessPositionConverter;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.Point;
+import java.util.List;
 
 /**
  * Represents the chessboard and its current state
@@ -21,6 +22,20 @@ public class ChessBoard
 	{
 		setupBoard();
 		currentTurn = Color.WHITE;
+	}
+
+	/**
+	 * Get all legal moves for a specified chess piece
+	 * @param moveFrom The position of the chess piece
+	 * @return A list of points where the piece can move to, null if there is no piece
+	 */
+	public List<Point> getLegalMoves(Point moveFrom)
+	{
+		if (gameBoard[moveFrom.y][moveFrom.x] != null)
+		{
+			return gameBoard[moveFrom.y][moveFrom.x].getLegalMoves(moveFrom, gameBoard);
+		}
+		return null;
 	}
 
 	/**
@@ -79,13 +94,18 @@ public class ChessBoard
 	 * updated gameboard to the console.
 	 * @param from The position of the piece to be moved
 	 * @param to The position where the piece should be moved to
+	 * @param log If true, the updated chessboard will be logged to the console
 	 */
-	private void makeMove(Point from, Point to)
+	private void makeMove(Point from, Point to, boolean log)
 	{
 		// TODO: Handle capture (points update, etc...)
 		gameBoard[to.y][to.x] = gameBoard[from.y][from.x];
 		gameBoard[from.y][from.x] = null;
 		ChessplayerController.logger.info(String.valueOf(this));
+	}
+	private void makeMove(Point from, Point to)
+	{
+		makeMove(from, to, true);
 	}
 
 	private void setupBoard()

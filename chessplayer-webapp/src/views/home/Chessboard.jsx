@@ -32,8 +32,7 @@ export function setupChessboard()
  * Make the move specified by the server's response, if it is allowed
  * @param {*} data A JSON object containing the server's response
  */
-export function movePiece(data)
-{
+export function movePiece(data) {
     if (data.legal)
     {
         const sourceId = data.pieceID;
@@ -52,6 +51,10 @@ export function movePiece(data)
         }
         target.appendChild(document.getElementById(sourceId));
     }
+}
+
+export function handleMoves(data) {
+    console.log(data);
 }
 
 function setupBlackPieces()

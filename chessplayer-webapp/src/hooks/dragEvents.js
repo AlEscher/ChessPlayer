@@ -1,4 +1,4 @@
-import { movePiece } from "../views/home/Chessboard";
+import { handleMoves, movePiece } from "../views/home";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 const $ = require("jquery");
@@ -26,6 +26,20 @@ export function handleDragStart(e) {
     {
         e.dataTransfer.setData("pieceID", e.target.id);
         e.dataTransfer.setData("fromTile", e.target.parentElement.id);
+
+        const dataSend = {
+            fromTile: e.target.parentElement.id,
+            pieceID: e.target.id,
+        };
+
+        $.ajax({
+            url: "get-moves",
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: dataSend,
+            success: handleMoves,
+        });
     }
     else
     {
@@ -58,17 +72,21 @@ export function handleDrop(e) {
     else if (e.target.className === "piece") targetObj = e.target.parentElement;
     else return;
 
-    const data = { fromTile: e.dataTransfer.getData("fromTile"), toTile: targetObj.id, pieceID: e.dataTransfer.getData("pieceID") };
-        $.ajax({
-            url: "make-move",
-            type: "PUT",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: JSON.stringify(data),
-            success: movePiece,
-        });
-        // Reset the border of the tile we were dropping the piece into
-        targetObj.style.border = "";
+    const data = {
+        fromTile: e.dataTransfer.getData("fromTile"),
+        toTile: targetObj.id,
+        pieceID: e.dataTransfer.getData("pieceID"),
+    };
+    $.ajax({
+        url: "make-move",
+        type: "PUT",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        data: JSON.stringify(data),
+        success: movePiece,
+    });
+    // Reset the border of the tile we were dropping the piece into
+    targetObj.style.border = "";
 }
 
 /**
