@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.awt.Point;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class ChessplayerController
@@ -50,7 +51,11 @@ public class ChessplayerController
 		logger.info(String.format("Received request to generate moves for %s on %s", pieceID, fromTile));
 
 		Point moveFrom = ChessPositionConverter.convertTileToPoint(fromTile);
-		List<Point> possibleMoves = board.getLegalMoves(moveFrom);
+		// Get all legal moves and convert them to chess coordinates
+		List<String> possibleMoves = board.getLegalMoves(moveFrom)
+				.stream()
+				.map(p -> ChessPositionConverter.convertPointToTile(p))
+				.collect(Collectors.toList());
 
 		MoveResponseEntity moveResponse = new MoveResponseEntity(fromTile, null, pieceID, true, possibleMoves);
 		logger.info("Sending response: " + moveResponse);

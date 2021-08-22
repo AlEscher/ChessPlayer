@@ -1,6 +1,5 @@
 package com.alescher.chessplayerserver.controller;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +12,7 @@ public class MoveResponseEntity
 	private String toTile;
 	private String pieceID;
 	private boolean legal;
-	private List<Point> possibleMoves = new ArrayList<>();
+	private List<String> possibleMoves = new ArrayList<>();
 
 	@Override
 	public String toString()
@@ -42,12 +41,12 @@ public class MoveResponseEntity
 		return legal;
 	}
 
-	public List<Point> getPossibleMoves()
+	public List<String> getPossibleMoves()
 	{
 		return possibleMoves;
 	}
 
-	public MoveResponseEntity(String fromTile, String toTile, String pieceID, boolean legal, List<Point> possibleMoves)
+	public MoveResponseEntity(String fromTile, String toTile, String pieceID, boolean legal, List<String> possibleMoves)
 	{
 		this.fromTile = fromTile;
 		this.toTile = toTile;

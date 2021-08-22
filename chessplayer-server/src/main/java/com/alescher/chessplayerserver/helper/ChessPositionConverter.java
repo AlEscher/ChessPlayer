@@ -35,6 +35,20 @@ public class ChessPositionConverter
 		return new Point(x, y);
 	}
 
+	/**
+	 * Transforms a 2D point into chess coordinates
+	 * @param point The 2D point
+	 * @return The corresponding chess coordinate, e.g. "A1"
+	 */
+	public static String convertPointToTile(@NotNull Point point)
+	{
+		StringBuilder tile = new StringBuilder();
+		tile.append((char)(point.x + 65));  // A => 65, H => 72
+		// Mirror the column index (Our board's top left corner is (0, 0) but on a chessboard it is A8)
+		tile.append(Character.forDigit((point.y - (point.y - 4) * 2), 10));
+		return tile.toString();
+	}
+
 	private static int convertColumn(char col) throws IllegalArgumentException
 	{
 		int value = (int)Character.toUpperCase(col) - 65; // A => 65, H => 72

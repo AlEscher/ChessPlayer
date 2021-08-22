@@ -64,7 +64,7 @@ public class Pawn implements ChessPiece
 		possibleMoves.add(new Point(moveFrom.x + 1, moveFrom.y + direction));
 		possibleMoves.add(new Point(moveFrom.x - 1, moveFrom.y + direction));
 
-		possibleMoves.removeIf(p -> (!BoardUtility.checkBounds(p) || !isLegalMove(moveFrom, p, gameBoard)));
+		BoardUtility.removeIllegalMoves(possibleMoves, this, moveFrom, gameBoard);
  		return possibleMoves;
 	}
 

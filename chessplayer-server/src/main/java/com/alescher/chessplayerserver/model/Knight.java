@@ -40,7 +40,7 @@ public class Knight implements ChessPiece
 		possibleMoves.add(new Point(moveFrom.x - 1, moveFrom.y + 2));
 		possibleMoves.add(new Point(moveFrom.x - 1, moveFrom.y - 2));
 
-		possibleMoves.removeIf(p -> !BoardUtility.checkBounds(p) || !isLegalMove(p, moveFrom, gameBoard));
+		BoardUtility.removeIllegalMoves(possibleMoves, this, moveFrom, gameBoard);
 		return possibleMoves;
 	}
 

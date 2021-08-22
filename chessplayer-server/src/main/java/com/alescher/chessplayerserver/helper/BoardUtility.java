@@ -3,6 +3,7 @@ package com.alescher.chessplayerserver.helper;
 import com.alescher.chessplayerserver.model.ChessPiece;
 
 import java.awt.Point;
+import java.util.List;
 
 /**
  * Utility functions for checking things on our chessboard
@@ -10,6 +11,13 @@ import java.awt.Point;
  */
 public class BoardUtility
 {
+	public static void removeIllegalMoves(List<Point> possibleMoves, ChessPiece piece, Point moveFrom, ChessPiece[][] gameBoard)
+	{
+		possibleMoves.removeIf(p -> (
+				!BoardUtility.checkBounds(p)
+				|| !piece.isLegalMove(moveFrom, p, gameBoard)
+				|| BoardUtility.checkFriendlyFire(moveFrom, p, gameBoard)));
+	}
 	/**
 	 * Checks every tile from (moveFrom, moveTo) and returns whether
 	 * there is no piece (enemy or friendly) on any of the tiles. The first & last tile are not checked.
