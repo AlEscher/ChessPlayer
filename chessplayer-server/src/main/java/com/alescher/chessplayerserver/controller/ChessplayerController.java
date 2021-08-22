@@ -27,9 +27,7 @@ public class ChessplayerController
 	{
 		logger.info("Setting up new ChessBoard");
 		this.board = new ChessBoard();
-		ModelAndView indexView = new ModelAndView();
-		indexView.setViewName("index.html");
-		return indexView;
+		return new ModelAndView("index.html");
 	}
 
 	@PutMapping (path="/make-move", consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
