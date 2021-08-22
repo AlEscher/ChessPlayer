@@ -11,12 +11,12 @@ export default function getAudioPlayer() {
 
 /**
  * Picks a random sound from the specified soundClass and plays it
- * @param {String} soundClass
+ * @param {String} soundClass The audio element's className
  */
 export function playRandomSound(soundClass)
 {
     const audioElements = document.getElementsByClassName(soundClass);
     const index = Math.floor(Math.random() * audioElements.length);
-    console.log(`Playing sound:${index}`);
+    console.log(`Playing ${soundClass}: ${index}`);
     audioElements[index].play();
 }

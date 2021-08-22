@@ -39,10 +39,18 @@ export function movePiece(data)
         const sourceId = data.pieceID;
         // Tile we are dropping the piece onto
         const target = document.getElementById(data.toTile);
+        // Check if we are capturing
+        if (target.hasChildNodes())
+        {
+            target.removeChild(target.childNodes[0]);
+            playRandomSound("captureSound");
+        }
+        else
+        {
+            // Play move sound
+            playRandomSound("moveSound");
+        }
         target.appendChild(document.getElementById(sourceId));
-
-        // Play move sound
-        playRandomSound("moveSound");
     }
 }
 
