@@ -1,7 +1,14 @@
 #chessboard {
     min-width: 800px;
+    max-width: 800px;
     margin-left:auto;
     margin-right:auto;
+    left:50%;
+    top:50%;
+}
+
+body {
+    background-color: #33302d;
 }
 
 div.tile-row {

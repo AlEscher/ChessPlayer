@@ -1,4 +1,3 @@
-import React from 'react';
 import {
  useEvent, handleDragOver, handleDragStart, handleDragEnter,
  handleDragLeave, handleDrop, handleClick,
@@ -18,9 +17,5 @@ export default function Engine() {
 
     useEvent("mousedown", handleClick);
 
-    return (
-      <h1>
-          Chess Player
-      </h1>
-    );
+    return null;
 }
