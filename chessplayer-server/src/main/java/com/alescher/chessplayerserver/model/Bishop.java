@@ -44,6 +44,12 @@ public class Bishop implements ChessPiece
 	}
 
 	@Override
+	public int getValue()
+	{
+		return 3;
+	}
+
+	@Override
 	public String toString()
 	{
 		return "B";

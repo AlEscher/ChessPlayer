@@ -30,4 +30,5 @@ public interface ChessPiece
 	List<Point> getLegalMoves(Point moveFrom, ChessPiece[][] gameBoard);
 
 	Color getColor();
+	int getValue();
 }

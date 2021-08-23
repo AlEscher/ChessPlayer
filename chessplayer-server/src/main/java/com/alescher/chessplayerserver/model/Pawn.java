@@ -109,6 +109,12 @@ public class Pawn implements ChessPiece
 	}
 
 	@Override
+	public int getValue()
+	{
+		return 1;
+	}
+
+	@Override
 	public String toString()
 	{
 		return "P";

@@ -49,6 +49,12 @@ public class King implements ChessPiece
 	}
 
 	@Override
+	public int getValue()
+	{
+		return Integer.MAX_VALUE;
+	}
+
+	@Override
 	public String toString()
 	{
 		return "K";

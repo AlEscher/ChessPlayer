@@ -44,6 +44,12 @@ public class Queen implements ChessPiece
 	}
 
 	@Override
+	public int getValue()
+	{
+		return 9;
+	}
+
+	@Override
 	public String toString()
 	{
 		return "Q";

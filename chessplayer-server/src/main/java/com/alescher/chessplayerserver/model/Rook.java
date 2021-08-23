@@ -43,6 +43,12 @@ public class Rook implements ChessPiece
 	}
 
 	@Override
+	public int getValue()
+	{
+		return 5;
+	}
+
+	@Override
 	public String toString()
 	{
 		return "R";
