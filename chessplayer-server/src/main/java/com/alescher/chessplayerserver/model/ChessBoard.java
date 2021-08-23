@@ -40,7 +40,7 @@ public class ChessBoard
 		{
 			return gameBoard[moveFrom.y][moveFrom.x].getLegalMoves(moveFrom, gameBoard);
 		}
-		return null;
+		return new ArrayList<>();
 	}
 
 	/**

@@ -69,7 +69,7 @@ public class BoardUtility
 	 * Checks every tile from (moveFrom, moveTo) and returns whether
 	 * there is no piece (enemy or friendly) on any of the tiles. The first & last tile are not checked.
 	 * This method assumes that moveFrom and moveTo are both within the bounds of the gameBoard.
-	 * @param moveFrom The starting point (inclusive)
+	 * @param moveFrom The starting point (not inclusive)
 	 * @param moveTo The end point (not inclusive)
 	 * @param gameBoard The chessboard
 	 * @return True if there is no piece on this path, false otherwise
