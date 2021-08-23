@@ -32,7 +32,7 @@ public class ChessBoard
 	/**
 	 * Get all legal moves for a specified chess piece
 	 * @param moveFrom The position of the chess piece
-	 * @return A list of points where the piece can move to, null if there is no piece
+	 * @return A list of points where the piece can move to
 	 */
 	public List<Point> getLegalMoves(Point moveFrom)
 	{
