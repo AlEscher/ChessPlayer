@@ -38,3 +38,16 @@ p.piece {
     -webkit-text-stroke-width: 1px;
     -webkit-text-stroke-color: black;
 }
+
+span.movePreview {
+    position: absolute;
+    left:50%;
+    top:50%;
+    transform: translate(-50%, -50%);
+    margin: auto;
+    height: 25px;
+    width: 25px;
+    background-color: #644d4d80;
+    border-radius: 50%;
+    display: inline-block;
+}

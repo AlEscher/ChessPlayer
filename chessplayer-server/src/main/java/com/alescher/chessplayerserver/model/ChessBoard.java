@@ -3,9 +3,11 @@ package com.alescher.chessplayerserver.model;
 import com.alescher.chessplayerserver.controller.ChessplayerController;
 import com.alescher.chessplayerserver.helper.BoardUtility;
 import com.alescher.chessplayerserver.helper.ChessPositionConverter;
+import com.alescher.chessplayerserver.helper.Move;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,13 +17,16 @@ import java.util.List;
  */
 public class ChessBoard
 {
-	private final ChessPiece[][] gameBoard = new ChessPiece[8][8];
+	private final ChessPiece[][] gameBoard;
+	private final List<Move> pastMoves;
 	private Color currentTurn;
 
 	public ChessBoard()
 	{
+		this.gameBoard = new ChessPiece[8][8];
+		this.pastMoves = new ArrayList<>();
+		this.currentTurn = Color.WHITE;
 		setupBoard();
-		currentTurn = Color.WHITE;
 	}
 
 	/**
@@ -99,6 +104,7 @@ public class ChessBoard
 	private void makeMove(Point from, Point to, boolean log)
 	{
 		// TODO: Handle capture (points update, etc...)
+		pastMoves.add(new Move(from, to));
 		gameBoard[to.y][to.x] = gameBoard[from.y][from.x];
 		gameBoard[from.y][from.x] = null;
 		ChessplayerController.logger.info(String.valueOf(this));

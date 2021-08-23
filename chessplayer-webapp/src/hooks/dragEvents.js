@@ -69,7 +69,7 @@ export function handleDrop(e) {
     let targetObj = e.target;
     // Check that we are dropping something onto a tile or a piece
     if (e.target.classList.length > 0 && e.target.classList[0] === "tile") targetObj = e.target;
-    else if (e.target.className === "piece") targetObj = e.target.parentElement;
+    else if (e.target.className === "piece" || e.target.className === "movePreview") targetObj = e.target.parentElement;
     else return;
 
     const data = {
@@ -87,6 +87,15 @@ export function handleDrop(e) {
     });
     // Reset the border of the tile we were dropping the piece into
     targetObj.style.border = "";
+    // Reset the move previews
+    const movePreviews = document.getElementsByClassName("movePreview");
+    Array.from(movePreviews).forEach(
+        (preview) => {
+            const tile = preview.parentElement;
+            // Remove last child node
+            tile.removeChild(tile.childNodes[tile.childNodes.length - 1]);
+        },
+    );
 }
 
 /**

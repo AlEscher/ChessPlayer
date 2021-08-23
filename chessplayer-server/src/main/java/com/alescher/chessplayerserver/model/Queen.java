@@ -28,7 +28,13 @@ public class Queen implements ChessPiece
 	@Override
 	public List<Point> getLegalMoves(Point moveFrom, ChessPiece[][] gameBoard)
 	{
-		return null;
+		// Create directional vectors in diagonal, vertical and horizontal directions
+		List<Point> directions = List.of(
+				new Point(1, 1), new Point(1, -1), new Point(-1, 1), new Point(-1, -1),
+				new Point(0, 1), new Point(0, -1), new Point(-1, 0), new Point(1, 0)
+		);
+
+		return BoardUtility.generateLegalMoves(moveFrom, directions, this, gameBoard);
 	}
 
 	@Override

@@ -55,6 +55,14 @@ export function movePiece(data) {
 
 export function handleMoves(data) {
     console.log(data);
+    data.possibleMoves.forEach(
+        (tileID) => {
+            const tile = document.getElementById(tileID);
+            const preview = document.createElement("span");
+            preview.classList.add("movePreview");
+            tile.appendChild(preview);
+        },
+    );
 }
 
 function setupBlackPieces()
