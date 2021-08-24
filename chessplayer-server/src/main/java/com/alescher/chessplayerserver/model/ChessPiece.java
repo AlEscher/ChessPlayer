@@ -1,5 +1,7 @@
 package com.alescher.chessplayerserver.model;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.awt.Point;
 import java.util.List;
 
@@ -19,7 +21,7 @@ public interface ChessPiece
 	 * @param gameBoard The gameboard representing the current state of the chessboard
 	 * @return True if the move is allowed, False otherwise
 	 */
-	boolean isLegalMove(Point moveFrom, Point moveTo, ChessPiece[][] gameBoard);
+	boolean isLegalMove(@NotNull Point moveFrom, @NotNull Point moveTo, @NotNull ChessPiece[][] gameBoard);
 
 	/**
 	 * Calculates all moves that this piece is allowed to perform at the moment
@@ -27,7 +29,7 @@ public interface ChessPiece
 	 * @param gameBoard The gameboard representing the current state of the chessboard
 	 * @return A list of all tiles the piece can move to
 	 */
-	List<Point> getLegalMoves(Point moveFrom, ChessPiece[][] gameBoard);
+	List<Point> getLegalMoves(@NotNull Point moveFrom, @NotNull ChessPiece[][] gameBoard);
 
 	Color getColor();
 	int getValue();

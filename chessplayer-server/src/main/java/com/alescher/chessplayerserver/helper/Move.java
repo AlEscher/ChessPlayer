@@ -1,5 +1,8 @@
 package com.alescher.chessplayerserver.helper;
 
+import com.alescher.chessplayerserver.model.ChessPiece;
+import org.jetbrains.annotations.Nullable;
+
 import java.awt.Point;
 
 /**
@@ -11,6 +14,7 @@ public class Move
 {
 	private Point from;
 	private Point to;
+	private ChessPiece capturedPiece;
 
 	public Point getFrom()
 	{
@@ -22,9 +26,15 @@ public class Move
 		return to;
 	}
 
-	public Move(Point from, Point to)
+	public ChessPiece getCapturedPiece()
+	{
+		return capturedPiece;
+	}
+
+	public Move(Point from, Point to, @Nullable ChessPiece capturedPiece)
 	{
 		this.from = from;
 		this.to = to;
+		this.capturedPiece = capturedPiece;
 	}
 }

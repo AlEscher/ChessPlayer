@@ -34,7 +34,7 @@ public class ChessBoard
 	 * @param moveFrom The position of the chess piece
 	 * @return A list of points where the piece can move to
 	 */
-	public List<Point> getLegalMoves(Point moveFrom)
+	public List<Point> getLegalMoves(@NotNull Point moveFrom)
 	{
 		if (gameBoard[moveFrom.y][moveFrom.x] != null)
 		{
@@ -104,7 +104,7 @@ public class ChessBoard
 	private void makeMove(Point from, Point to, boolean log)
 	{
 		// TODO: Handle capture (points update, etc...)
-		pastMoves.add(new Move(from, to));
+		pastMoves.add(new Move(from, to, gameBoard[to.y][to.x]));
 		gameBoard[to.y][to.x] = gameBoard[from.y][from.x];
 		gameBoard[from.y][from.x] = null;
 		ChessplayerController.logger.info(String.valueOf(this));
