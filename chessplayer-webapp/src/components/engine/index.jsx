@@ -1,7 +1,9 @@
+import React from 'react';
 import {
  useEvent, handleDragOver, handleDragStart, handleDragEnter,
  handleDragLeave, handleDrop, handleClick,
 } from '../../hooks';
+import TopNavBar from '../../views/home/TopNavBar';
 
 /**
  * Sets up our hooks for drag and drop events.
@@ -17,5 +19,5 @@ export default function Engine() {
 
     useEvent("mousedown", handleClick);
 
-    return null;
+    return (<TopNavBar />);
 }

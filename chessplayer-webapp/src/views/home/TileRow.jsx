@@ -26,9 +26,6 @@ export default function TileRow(props)
     );
 }
 
-TileRow.defaultProps = {
-    row: -1,
-};
 TileRow.propTypes = {
-    row: PropTypes.number,
+    row: PropTypes.number.isRequired,
 };

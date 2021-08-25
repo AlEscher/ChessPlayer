@@ -25,7 +25,7 @@ public class ChessBoard
 	public ChessBoard()
 	{
 		this.gameBoard = new ChessPiece[8][8];
-		this.pastMoves = new ArrayList<>();
+		this.pastMoves = new Stack<>();
 		this.currentTurn = Color.WHITE;
 		setupBoard();
 	}

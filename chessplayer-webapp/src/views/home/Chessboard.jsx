@@ -54,7 +54,6 @@ export function movePiece(data) {
 }
 
 export function handleMoves(data) {
-    console.log(data);
     data.possibleMoves.forEach(
         (tileID) => {
             const tile = document.getElementById(tileID);
