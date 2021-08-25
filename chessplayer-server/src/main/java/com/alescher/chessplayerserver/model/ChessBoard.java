@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Represents the chessboard and its current state
@@ -18,7 +19,7 @@ import java.util.List;
 public class ChessBoard
 {
 	private final ChessPiece[][] gameBoard;
-	private final List<Move> pastMoves;
+	private final Stack<Move> pastMoves;
 	private Color currentTurn;
 
 	public ChessBoard()
@@ -80,6 +81,18 @@ public class ChessBoard
 	}
 
 	/**
+	 * Undoes the last move that was performed.
+	 * Removes the undone move and sets the currentTurn back to the previous value
+	 */
+	private void undoMove()
+	{
+		Move move = pastMoves.pop();
+		gameBoard[move.getFrom().y][move.getFrom().x] = gameBoard[move.getTo().y][move.getTo().x];
+		gameBoard[move.getTo().y][move.getTo().x] = move.getCapturedPiece();
+		currentTurn = (currentTurn == Color.WHITE) ? Color.BLACK : Color.WHITE;
+	}
+
+	/**
 	 * Checks that the piece to be moved belongs to the player whose turn it currently is.
 	 * Also updates the currentTurn for the next move.
 	 * @param moveFrom The piece to be moved
@@ -104,7 +117,7 @@ public class ChessBoard
 	private void makeMove(Point from, Point to, boolean log)
 	{
 		// TODO: Handle capture (points update, etc...)
-		pastMoves.add(new Move(from, to, gameBoard[to.y][to.x]));
+		pastMoves.push(new Move(from, to, gameBoard[to.y][to.x]));
 		gameBoard[to.y][to.x] = gameBoard[from.y][from.x];
 		gameBoard[from.y][from.x] = null;
 		ChessplayerController.logger.info(String.valueOf(this));
