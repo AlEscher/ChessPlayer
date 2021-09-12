@@ -5,13 +5,13 @@ import com.alescher.chessplayerserver.helper.BoardUtility;
 import java.awt.Point;
 import java.util.List;
 
-public class Rook implements ChessPiece
+public class Rook extends ChessPiece
 {
 	private Color color;
 
-	public Rook(Color color)
+	public Rook(Color color, Point position)
 	{
-		this.color = color;
+		super(color, position);
 	}
 
 	@Override
@@ -34,12 +34,6 @@ public class Rook implements ChessPiece
 		);
 
 		return BoardUtility.generateLegalMoves(moveFrom, directions, this, gameBoard);
-	}
-
-	@Override
-	public Color getColor()
-	{
-		return color;
 	}
 
 	@Override

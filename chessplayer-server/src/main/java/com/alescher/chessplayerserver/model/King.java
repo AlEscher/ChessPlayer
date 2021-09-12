@@ -6,13 +6,13 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-public class King implements ChessPiece
+public class King extends ChessPiece
 {
 	private Color color;
 
-	public King(Color color)
+	public King(Color color, Point position)
 	{
-		this.color = color;
+		super(color, position);
 	}
 
 	@Override
@@ -40,12 +40,6 @@ public class King implements ChessPiece
 
 		BoardUtility.removeIllegalMoves(possibleMoves, this, moveFrom, gameBoard);
 		return possibleMoves;
-	}
-
-	@Override
-	public Color getColor()
-	{
-		return color;
 	}
 
 	@Override

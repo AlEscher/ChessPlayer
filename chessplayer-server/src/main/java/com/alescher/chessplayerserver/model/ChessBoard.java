@@ -32,6 +32,7 @@ public class ChessBoard
 
 	/**
 	 * Get all legal moves for a specified chess piece
+	 *
 	 * @param moveFrom The position of the chess piece
 	 * @return A list of points where the piece can move to
 	 */
@@ -46,8 +47,9 @@ public class ChessBoard
 
 	/**
 	 * Checks whether a move can be performed on the chessboard
+	 *
 	 * @param fromTile The tile a piece is being moved from, e.g. "A1", "B3", etc...
-	 * @param toTile The tile a piece is being moved to, e.g. "A1", "B3", etc...
+	 * @param toTile   The tile a piece is being moved to, e.g. "A1", "B3", etc...
 	 * @return True if the move is allowed to be performed, false otherwise
 	 */
 	public boolean isLegalMove(@NotNull String fromTile, @NotNull String toTile)
@@ -55,7 +57,7 @@ public class ChessBoard
 		Point fromPoint = ChessPositionConverter.convertTileToPoint(fromTile);
 		Point toPoint = ChessPositionConverter.convertTileToPoint(toTile);
 
-		ChessplayerController.logger.info(String.format("Checking move from %s to %s", fromPoint.toString(), toPoint.toString()));
+		ChessplayerController.logger.info(String.format("Checking move from %s to %s", fromPoint, toPoint));
 		// Check bounds
 		if (!BoardUtility.checkBounds(fromPoint) || !BoardUtility.checkBounds(toPoint))
 			return false;
@@ -95,6 +97,7 @@ public class ChessBoard
 	/**
 	 * Checks that the piece to be moved belongs to the player whose turn it currently is.
 	 * Also updates the currentTurn for the next move.
+	 *
 	 * @param moveFrom The piece to be moved
 	 * @return True if it's the correct player's turn, false otherwise
 	 */
@@ -110,9 +113,10 @@ public class ChessBoard
 	/**
 	 * Updates the gameboard by performing the specified move. Also logs the
 	 * updated gameboard to the console.
+	 *
 	 * @param from The position of the piece to be moved
-	 * @param to The position where the piece should be moved to
-	 * @param log If true, the updated chessboard will be logged to the console
+	 * @param to   The position where the piece should be moved to
+	 * @param log  If true, the updated chessboard will be logged to the console
 	 */
 	private void makeMove(Point from, Point to, boolean log)
 	{
@@ -120,8 +124,11 @@ public class ChessBoard
 		pastMoves.push(new Move(from, to, gameBoard[to.y][to.x]));
 		gameBoard[to.y][to.x] = gameBoard[from.y][from.x];
 		gameBoard[from.y][from.x] = null;
-		ChessplayerController.logger.info(String.valueOf(this));
+		gameBoard[to.y][to.x].setPosition(to);
+
+		if (log) ChessplayerController.logger.info(String.valueOf(this));
 	}
+
 	private void makeMove(Point from, Point to)
 	{
 		makeMove(from, to, true);
@@ -131,26 +138,26 @@ public class ChessBoard
 	{
 		for (int i = 0; i < 8; i++)
 		{
-			gameBoard[6][i] = new Pawn(Color.WHITE, Pawn.Direction.UP);
-			gameBoard[1][i] = new Pawn(Color.BLACK, Pawn.Direction.DOWN);
+			gameBoard[6][i] = new Pawn(Color.WHITE, Pawn.Direction.UP, new Point(i, 6));
+			gameBoard[1][i] = new Pawn(Color.BLACK, Pawn.Direction.DOWN, new Point(i, 1));
 		}
-		gameBoard[0][0] = new Rook(Color.BLACK);
-		gameBoard[0][1] = new Knight(Color.BLACK);
-		gameBoard[0][2] = new Bishop(Color.BLACK);
-		gameBoard[0][3] = new King(Color.BLACK);
-		gameBoard[0][4] = new Queen(Color.BLACK);
-		gameBoard[0][5] = new Bishop(Color.BLACK);
-		gameBoard[0][6] = new Knight(Color.BLACK);
-		gameBoard[0][7] = new Rook(Color.BLACK);
+		gameBoard[0][0] = new Rook(Color.BLACK, new Point(0, 0));
+		gameBoard[0][1] = new Knight(Color.BLACK, new Point(1, 0));
+		gameBoard[0][2] = new Bishop(Color.BLACK, new Point(2, 0));
+		gameBoard[0][3] = new King(Color.BLACK, new Point(3, 0));
+		gameBoard[0][4] = new Queen(Color.BLACK, new Point(4, 0));
+		gameBoard[0][5] = new Bishop(Color.BLACK, new Point(5, 0));
+		gameBoard[0][6] = new Knight(Color.BLACK, new Point(6, 0));
+		gameBoard[0][7] = new Rook(Color.BLACK, new Point(7, 0));
 
-		gameBoard[7][0] = new Rook(Color.WHITE);
-		gameBoard[7][1] = new Knight(Color.WHITE);
-		gameBoard[7][2] = new Bishop(Color.WHITE);
-		gameBoard[7][3] = new King(Color.WHITE);
-		gameBoard[7][4] = new Queen(Color.WHITE);
-		gameBoard[7][5] = new Bishop(Color.WHITE);
-		gameBoard[7][6] = new Knight(Color.WHITE);
-		gameBoard[7][7] = new Rook(Color.WHITE);
+		gameBoard[7][0] = new Rook(Color.WHITE, new Point(0, 7));
+		gameBoard[7][1] = new Knight(Color.WHITE, new Point(1, 7));
+		gameBoard[7][2] = new Bishop(Color.WHITE, new Point(2, 7));
+		gameBoard[7][3] = new King(Color.WHITE, new Point(3, 7));
+		gameBoard[7][4] = new Queen(Color.WHITE, new Point(4, 7));
+		gameBoard[7][5] = new Bishop(Color.WHITE, new Point(5, 7));
+		gameBoard[7][6] = new Knight(Color.WHITE, new Point(6, 7));
+		gameBoard[7][7] = new Rook(Color.WHITE, new Point(7, 7));
 	}
 
 	@Override

@@ -6,13 +6,13 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Knight implements ChessPiece
+public class Knight extends ChessPiece
 {
 	private Color color;
 
-	public Knight(Color color)
+	public Knight(Color color, Point position)
 	{
-		this.color = color;
+		super(color, position);
 	}
 
 	@Override
@@ -42,12 +42,6 @@ public class Knight implements ChessPiece
 
 		BoardUtility.removeIllegalMoves(possibleMoves, this, moveFrom, gameBoard);
 		return possibleMoves;
-	}
-
-	@Override
-	public Color getColor()
-	{
-		return color;
 	}
 
 	@Override

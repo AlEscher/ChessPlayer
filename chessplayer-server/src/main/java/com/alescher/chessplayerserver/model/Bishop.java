@@ -3,16 +3,14 @@ package com.alescher.chessplayerserver.model;
 import com.alescher.chessplayerserver.helper.BoardUtility;
 
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.List;
 
-public class Bishop implements ChessPiece
+public class Bishop extends ChessPiece
 {
-	private Color color;
 
-	public Bishop(Color color)
+	public Bishop(Color color, Point position)
 	{
-		this.color = color;
+		super(color, position);
 	}
 
 	@Override
@@ -35,12 +33,6 @@ public class Bishop implements ChessPiece
 		);
 
 		return BoardUtility.generateLegalMoves(moveFrom, directions, this, gameBoard);
-	}
-
-	@Override
-	public Color getColor()
-	{
-		return color;
 	}
 
 	@Override

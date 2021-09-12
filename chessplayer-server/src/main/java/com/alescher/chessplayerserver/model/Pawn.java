@@ -2,7 +2,7 @@ package com.alescher.chessplayerserver.model;
 
 import com.alescher.chessplayerserver.helper.BoardUtility;
 
-import java.awt.*;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,15 +11,15 @@ import java.util.List;
  *
  * @author AlEscher
  */
-public class Pawn implements ChessPiece
+public class Pawn extends ChessPiece
 {
 	private boolean didMove = false;
 	private Color color;
 	private Direction direction;
 
-	public Pawn(Color color, Direction direction)
+	public Pawn(Color color, Direction direction, Point position)
 	{
-		this.color = color;
+		super(color, position);
 		this.direction = direction;
 	}
 
@@ -100,12 +100,6 @@ public class Pawn implements ChessPiece
 		// The row that this pawn was at the beginning of the game
 		int startingRow = (this.direction == Direction.DOWN) ? 1 : 6;
 		this.didMove = moveFrom.y != startingRow;
-	}
-
-	@Override
-	public Color getColor()
-	{
-		return color;
 	}
 
 	@Override

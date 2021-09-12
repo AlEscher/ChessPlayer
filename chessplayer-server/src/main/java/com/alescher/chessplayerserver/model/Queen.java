@@ -5,13 +5,13 @@ import com.alescher.chessplayerserver.helper.BoardUtility;
 import java.awt.Point;
 import java.util.List;
 
-public class Queen implements ChessPiece
+public class Queen extends ChessPiece
 {
 	private Color color;
 
-	public Queen(Color color)
+	public Queen(Color color, Point position)
 	{
-		this.color = color;
+		super(color, position);
 	}
 
 	@Override
@@ -35,12 +35,6 @@ public class Queen implements ChessPiece
 		);
 
 		return BoardUtility.generateLegalMoves(moveFrom, directions, this, gameBoard);
-	}
-
-	@Override
-	public Color getColor()
-	{
-		return color;
 	}
 
 	@Override
