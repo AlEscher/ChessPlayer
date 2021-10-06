@@ -81,8 +81,15 @@ public class ChessBoard
 			return false;
 		if (BoardUtility.checkFriendlyFire(moveFrom, moveTo, gameBoard))
 			return false;
+		if (!gameBoard[moveFrom.y][moveFrom.x].isLegalMove(moveFrom, moveTo, gameBoard))
+			return false;
 
-		return gameBoard[moveFrom.y][moveFrom.x].isLegalMove(moveFrom, moveTo, gameBoard);
+		// Simulate the move to see if any player's king is checked
+		makeMove(moveFrom, moveTo, false);
+		boolean isLegal = checkUtility.isMoveLegal(moveFrom, moveTo);
+		undoMove();
+
+		return isLegal;
 	}
 
 	/**
