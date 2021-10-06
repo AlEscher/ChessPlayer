@@ -1,20 +1,22 @@
 package com.alescher.chessplayerserver.helper;
 
 import com.alescher.chessplayerserver.model.ChessPiece;
-import com.alescher.chessplayerserver.model.Color;
 
 /**
- * Keep track of which player is currently checked
+ * Keep track of which player is currently under check
  * @author AlEscher
  */
 public class CheckUtility
 {
-	private ChessPiece[][] gameBoard;
-	private Color color;
+	private final ChessPiece[][] gameBoard;
 
-	public CheckUtility(ChessPiece[][] gameBoard, Color color)
+	public CheckUtility(ChessPiece[][] gameBoard)
 	{
 		this.gameBoard = gameBoard;
-		this.color = color;
+	}
+
+	public boolean isUnderCheck()
+	{
+		return false;
 	}
 }

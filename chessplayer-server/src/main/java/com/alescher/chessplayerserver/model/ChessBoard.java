@@ -2,6 +2,7 @@ package com.alescher.chessplayerserver.model;
 
 import com.alescher.chessplayerserver.controller.ChessplayerController;
 import com.alescher.chessplayerserver.helper.BoardUtility;
+import com.alescher.chessplayerserver.helper.CheckUtility;
 import com.alescher.chessplayerserver.helper.ChessPositionConverter;
 import com.alescher.chessplayerserver.helper.Move;
 import org.jetbrains.annotations.NotNull;
@@ -20,12 +21,14 @@ public class ChessBoard
 {
 	private final ChessPiece[][] gameBoard;
 	private final Stack<Move> pastMoves;
+	private final CheckUtility checkUtility;
 	private Color currentTurn;
 
 	public ChessBoard()
 	{
 		this.gameBoard = new ChessPiece[8][8];
 		this.pastMoves = new Stack<>();
+		this.checkUtility = new CheckUtility(this.gameBoard);
 		this.currentTurn = Color.WHITE;
 		setupBoard();
 	}

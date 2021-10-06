@@ -38,8 +38,7 @@ public class ChessplayerController
 		logger.info("Received request to make move: " + moveRequest);
 
 		boolean isLegal = board.isLegalMove(moveRequest.getFromTile(), moveRequest.getToTile());
-		MoveResponseEntity moveResponse = new MoveResponseEntity(moveRequest.getFromTile(), moveRequest.getToTile(),
-				moveRequest.getPieceID(), isLegal, null);
+		MoveResponseEntity moveResponse = MoveResponseEntity.create(moveRequest, isLegal, null);
 		logger.info("Sending move response: " + moveResponse);
 
 		return moveResponse;
@@ -57,7 +56,7 @@ public class ChessplayerController
 				.map(p -> ChessPositionConverter.convertPointToTile(p))
 				.collect(Collectors.toList());
 
-		MoveResponseEntity moveResponse = new MoveResponseEntity(fromTile, null, pieceID, true, possibleMoves);
+		MoveResponseEntity moveResponse = MoveResponseEntity.create(fromTile, pieceID, possibleMoves);
 		logger.info("Sending response: " + moveResponse);
 
 		return moveResponse;
