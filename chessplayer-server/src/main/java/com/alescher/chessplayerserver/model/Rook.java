@@ -7,33 +7,31 @@ import java.util.List;
 
 public class Rook extends ChessPiece
 {
-	private Color color;
-
-	public Rook(Color color, Point position)
+	public Rook(Color color, Point position, ChessPiece[][] gameBoard)
 	{
-		super(color, position);
+		super(color, position, gameBoard);
 	}
 
 	@Override
-	public boolean isLegalMove(Point moveFrom, Point moveTo, ChessPiece[][] gameBoard)
+	public boolean isLegalMove(Point moveTo)
 	{
-		if (!BoardUtility.isHorizontalOrVertical(moveFrom, moveTo))
+		if (!BoardUtility.isHorizontalOrVertical(position, moveTo))
 			return false;
-		if (!BoardUtility.checkPathUnobstructed(moveFrom, moveTo, gameBoard))
+		if (!BoardUtility.checkPathUnobstructed(position, moveTo, gameBoard))
 			return false;
 
 		return true;
 	}
 
 	@Override
-	public List<Point> getLegalMoves(Point moveFrom, ChessPiece[][] gameBoard)
+	public List<Point> getLegalMoves()
 	{
 		// Create directional vectors in vertical and horizontal directions
 		List<Point> directions = List.of(
 				new Point(0, 1), new Point(0, -1), new Point(-1, 0), new Point(1, 0)
 		);
 
-		return BoardUtility.generateLegalMoves(moveFrom, directions, this, gameBoard);
+		return BoardUtility.generateLegalMoves(position, directions, this, gameBoard);
 	}
 
 	@Override

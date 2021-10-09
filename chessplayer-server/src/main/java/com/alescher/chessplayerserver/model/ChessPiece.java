@@ -18,29 +18,38 @@ public abstract class ChessPiece
 	/** The current position of the chess piece */
 	protected Point position;
 	protected Color color;
+	protected final ChessPiece[][] gameBoard;
 
-	public ChessPiece(Color color, Point position)
+	public ChessPiece(Color color, Point position, ChessPiece[][] gameBoard)
 	{
 		this.color = color;
 		this.position = position;
+		this.gameBoard = gameBoard;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o == null)
+			return false;
+		if (o.getClass() != this.getClass())
+			return false;
+		ChessPiece piece = (ChessPiece)o;
+		return piece.getPosition().equals(this.getPosition()) && piece.getColor() == this.getColor();
 	}
 	
 	/**
 	 * Checks whether the move to be performed is allowed for this particular chess piece
-	 * @param moveFrom The current position of the piece
 	 * @param moveTo The position we want to move to
-	 * @param gameBoard The gameboard representing the current state of the chessboard
 	 * @return True if the move is allowed, False otherwise
 	 */
-	public abstract boolean isLegalMove(@NotNull Point moveFrom, @NotNull Point moveTo, @NotNull ChessPiece[][] gameBoard);
+	public abstract boolean isLegalMove(@NotNull Point moveTo);
 
 	/**
 	 * Calculates all moves that this piece is allowed to perform at the moment
-	 * @param moveFrom The current position of the piece
-	 * @param gameBoard The gameboard representing the current state of the chessboard
 	 * @return A list of all tiles the piece can move to
 	 */
-	public abstract List<Point> getLegalMoves(@NotNull Point moveFrom, @NotNull ChessPiece[][] gameBoard);
+	public abstract List<Point> getLegalMoves();
 
 	public abstract int getValue();
 

@@ -27,10 +27,10 @@ public class ChessBoard
 	public ChessBoard()
 	{
 		this.gameBoard = new ChessPiece[8][8];
-		this.pastMoves = new Stack<>();
-		this.checkUtility = new CheckUtility(this.gameBoard);
-		this.currentTurn = Color.WHITE;
 		setupBoard();
+		this.pastMoves = new Stack<>();
+		this.checkUtility = new CheckUtility(gameBoard, gameBoard[0][4], gameBoard[7][4]);
+		this.currentTurn = Color.WHITE;
 	}
 
 	/**
@@ -43,7 +43,7 @@ public class ChessBoard
 	{
 		if (gameBoard[moveFrom.y][moveFrom.x] != null)
 		{
-			return gameBoard[moveFrom.y][moveFrom.x].getLegalMoves(moveFrom, gameBoard);
+			return gameBoard[moveFrom.y][moveFrom.x].getLegalMoves();
 		}
 		return new ArrayList<>();
 	}
@@ -81,7 +81,7 @@ public class ChessBoard
 			return false;
 		if (BoardUtility.checkFriendlyFire(moveFrom, moveTo, gameBoard))
 			return false;
-		if (!gameBoard[moveFrom.y][moveFrom.x].isLegalMove(moveFrom, moveTo, gameBoard))
+		if (!gameBoard[moveFrom.y][moveFrom.x].isLegalMove(moveTo))
 			return false;
 
 		// Simulate the move to see if any player's king is checked
@@ -100,8 +100,9 @@ public class ChessBoard
 	{
 		Move move = pastMoves.pop();
 		gameBoard[move.getFrom().y][move.getFrom().x] = gameBoard[move.getTo().y][move.getTo().x];
+		BoardUtility.updatePiecePosition(move.getFrom(), gameBoard);
 		gameBoard[move.getTo().y][move.getTo().x] = move.getCapturedPiece();
-		currentTurn = (currentTurn == Color.WHITE) ? Color.BLACK : Color.WHITE;
+		BoardUtility.updatePiecePosition(move.getTo(), gameBoard);
 	}
 
 	/**
@@ -148,26 +149,26 @@ public class ChessBoard
 	{
 		for (int i = 0; i < 8; i++)
 		{
-			gameBoard[6][i] = new Pawn(Color.WHITE, Pawn.Direction.UP, new Point(i, 6));
-			gameBoard[1][i] = new Pawn(Color.BLACK, Pawn.Direction.DOWN, new Point(i, 1));
+			gameBoard[6][i] = new Pawn(Color.WHITE, Pawn.Direction.UP, new Point(i, 6), gameBoard);
+			gameBoard[1][i] = new Pawn(Color.BLACK, Pawn.Direction.DOWN, new Point(i, 1), gameBoard);
 		}
-		gameBoard[0][0] = new Rook(Color.BLACK, new Point(0, 0));
-		gameBoard[0][1] = new Knight(Color.BLACK, new Point(1, 0));
-		gameBoard[0][2] = new Bishop(Color.BLACK, new Point(2, 0));
-		gameBoard[0][3] = new King(Color.BLACK, new Point(3, 0));
-		gameBoard[0][4] = new Queen(Color.BLACK, new Point(4, 0));
-		gameBoard[0][5] = new Bishop(Color.BLACK, new Point(5, 0));
-		gameBoard[0][6] = new Knight(Color.BLACK, new Point(6, 0));
-		gameBoard[0][7] = new Rook(Color.BLACK, new Point(7, 0));
+		gameBoard[0][0] = new Rook(Color.BLACK, new Point(0, 0), gameBoard);
+		gameBoard[0][1] = new Knight(Color.BLACK, new Point(1, 0), gameBoard);
+		gameBoard[0][2] = new Bishop(Color.BLACK, new Point(2, 0), gameBoard);
+		gameBoard[0][3] = new Queen(Color.BLACK, new Point(3, 0), gameBoard);
+		gameBoard[0][4] = new King(Color.BLACK, new Point(4, 0), gameBoard);
+		gameBoard[0][5] = new Bishop(Color.BLACK, new Point(5, 0), gameBoard);
+		gameBoard[0][6] = new Knight(Color.BLACK, new Point(6, 0), gameBoard);
+		gameBoard[0][7] = new Rook(Color.BLACK, new Point(7, 0), gameBoard);
 
-		gameBoard[7][0] = new Rook(Color.WHITE, new Point(0, 7));
-		gameBoard[7][1] = new Knight(Color.WHITE, new Point(1, 7));
-		gameBoard[7][2] = new Bishop(Color.WHITE, new Point(2, 7));
-		gameBoard[7][3] = new King(Color.WHITE, new Point(3, 7));
-		gameBoard[7][4] = new Queen(Color.WHITE, new Point(4, 7));
-		gameBoard[7][5] = new Bishop(Color.WHITE, new Point(5, 7));
-		gameBoard[7][6] = new Knight(Color.WHITE, new Point(6, 7));
-		gameBoard[7][7] = new Rook(Color.WHITE, new Point(7, 7));
+		gameBoard[7][0] = new Rook(Color.WHITE, new Point(0, 7), gameBoard);
+		gameBoard[7][1] = new Knight(Color.WHITE, new Point(1, 7), gameBoard);
+		gameBoard[7][2] = new Bishop(Color.WHITE, new Point(2, 7), gameBoard);
+		gameBoard[7][3] = new Queen(Color.WHITE, new Point(3, 7), gameBoard);
+		gameBoard[7][4] = new King(Color.WHITE, new Point(4, 7), gameBoard);
+		gameBoard[7][5] = new Bishop(Color.WHITE, new Point(5, 7), gameBoard);
+		gameBoard[7][6] = new Knight(Color.WHITE, new Point(6, 7), gameBoard);
+		gameBoard[7][7] = new Rook(Color.WHITE, new Point(7, 7), gameBoard);
 	}
 
 	@Override

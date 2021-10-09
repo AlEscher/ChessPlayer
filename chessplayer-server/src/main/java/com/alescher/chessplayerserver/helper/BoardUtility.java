@@ -62,7 +62,7 @@ public class BoardUtility
 	{
 		possibleMoves.removeIf(p -> (
 				!BoardUtility.checkBounds(p)
-				|| !piece.isLegalMove(moveFrom, p, gameBoard)
+				|| !piece.isLegalMove(p)
 				|| BoardUtility.checkFriendlyFire(moveFrom, p, gameBoard)));
 	}
 	/**
@@ -137,5 +137,16 @@ public class BoardUtility
 	public static boolean isHorizontalOrVertical(Point moveFrom, Point moveTo)
 	{
 		return moveFrom.x == moveTo.x || moveFrom.y == moveTo.y;
+	}
+
+	/**
+	 * Updates the position of the piece on the specified tile
+	 * @param p The position
+	 * @param gameBoard The chessboard
+	 */
+	public static void updatePiecePosition(Point p, ChessPiece[][] gameBoard)
+	{
+		if (gameBoard[p.y][p.x] != null)
+			gameBoard[p.y][p.x].setPosition(p);
 	}
 }

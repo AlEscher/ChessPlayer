@@ -78,8 +78,8 @@ function setupBlackPieces()
     document.getElementById("A8").appendChild(rookL);
     document.getElementById("B8").appendChild(knightL);
     document.getElementById("C8").appendChild(bishopL);
-    document.getElementById("D8").appendChild(king);
-    document.getElementById("E8").appendChild(queen);
+    document.getElementById("D8").appendChild(queen);
+    document.getElementById("E8").appendChild(king);
     document.getElementById("F8").appendChild(bishopR);
     document.getElementById("G8").appendChild(knightR);
     document.getElementById("H8").appendChild(rookR);
@@ -101,8 +101,8 @@ function setupWhitePieces()
     document.getElementById("A1").appendChild(rookL);
     document.getElementById("B1").appendChild(knightL);
     document.getElementById("C1").appendChild(bishopL);
-    document.getElementById("D1").appendChild(king);
-    document.getElementById("E1").appendChild(queen);
+    document.getElementById("D1").appendChild(queen);
+    document.getElementById("E1").appendChild(king);
     document.getElementById("F1").appendChild(bishopR);
     document.getElementById("G1").appendChild(knightR);
     document.getElementById("H1").appendChild(rookR);

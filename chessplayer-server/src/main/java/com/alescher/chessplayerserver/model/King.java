@@ -8,37 +8,35 @@ import java.util.List;
 
 public class King extends ChessPiece
 {
-	private Color color;
-
-	public King(Color color, Point position)
+	public King(Color color, Point position, ChessPiece[][] gameBoard)
 	{
-		super(color, position);
+		super(color, position, gameBoard);
 	}
 
 	@Override
-	public boolean isLegalMove(Point moveFrom, Point moveTo, ChessPiece[][] gameBoard)
+	public boolean isLegalMove(Point moveTo)
 	{
-		if (Math.abs(moveFrom.x - moveTo.x) > 1 || Math.abs(moveFrom.y - moveTo.y) > 1)
+		if (Math.abs(position.x - moveTo.x) > 1 || Math.abs(position.y - moveTo.y) > 1)
 			return false;
 
 		return true;
 	}
 
 	@Override
-	public List<Point> getLegalMoves(Point moveFrom, ChessPiece[][] gameBoard)
+	public List<Point> getLegalMoves()
 	{
 		// All the moves a king can generally make
 		List<Point> possibleMoves = new ArrayList<>();
-		possibleMoves.add(new Point(moveFrom.x - 1, moveFrom.y - 1));
-		possibleMoves.add(new Point(moveFrom.x - 1, moveFrom.y + 1));
-		possibleMoves.add(new Point(moveFrom.x + 1, moveFrom.y - 1));
-		possibleMoves.add(new Point(moveFrom.x + 1, moveFrom.y + 1));
-		possibleMoves.add(new Point(moveFrom.x, moveFrom.y - 1));
-		possibleMoves.add(new Point(moveFrom.x, moveFrom.y + 1));
-		possibleMoves.add(new Point(moveFrom.x - 1, moveFrom.y));
-		possibleMoves.add(new Point(moveFrom.x + 1, moveFrom.y));
+		possibleMoves.add(new Point(position.x - 1, position.y - 1));
+		possibleMoves.add(new Point(position.x - 1, position.y + 1));
+		possibleMoves.add(new Point(position.x + 1, position.y - 1));
+		possibleMoves.add(new Point(position.x + 1, position.y + 1));
+		possibleMoves.add(new Point(position.x, position.y - 1));
+		possibleMoves.add(new Point(position.x, position.y + 1));
+		possibleMoves.add(new Point(position.x - 1, position.y));
+		possibleMoves.add(new Point(position.x + 1, position.y));
 
-		BoardUtility.removeIllegalMoves(possibleMoves, this, moveFrom, gameBoard);
+		BoardUtility.removeIllegalMoves(possibleMoves, this, position, gameBoard);
 		return possibleMoves;
 	}
 

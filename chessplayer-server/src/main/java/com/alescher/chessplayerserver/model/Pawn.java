@@ -14,12 +14,11 @@ import java.util.List;
 public class Pawn extends ChessPiece
 {
 	private boolean didMove = false;
-	private Color color;
 	private Direction direction;
 
-	public Pawn(Color color, Direction direction, Point position)
+	public Pawn(Color color, Direction direction, Point position, ChessPiece[][] gameBoard)
 	{
-		super(color, position);
+		super(color, position, gameBoard);
 		this.direction = direction;
 	}
 
@@ -32,39 +31,39 @@ public class Pawn extends ChessPiece
 	}
 
 	@Override
-	public boolean isLegalMove(Point moveFrom, Point moveTo, ChessPiece[][] gameBoard)
+	public boolean isLegalMove(Point moveTo)
 	{
-		updateDidMove(moveFrom);
+		updateDidMove(position);
 		// Check that we are moving in the correct direction
-		if (direction == Direction.DOWN && moveFrom.y >= moveTo.y)
+		if (direction == Direction.DOWN && position.y >= moveTo.y)
 			return false;
-		if (direction == Direction.UP && moveFrom.y <= moveTo.y)
+		if (direction == Direction.UP && position.y <= moveTo.y)
 			return false;
 
-		if (moveFrom.x == moveTo.x) // Pawn is moving forward
+		if (position.x == moveTo.x) // Pawn is moving forward
 		{
-			return checkMoveForward(moveFrom, moveTo, gameBoard);
+			return checkMoveForward(position, moveTo, gameBoard);
 		}
-		else if (Math.abs(moveFrom.x - moveTo.x) == 1) // Pawn is capturing
+		else if (Math.abs(position.x - moveTo.x) == 1) // Pawn is capturing
 		{
-			return checkCapture(moveFrom, moveTo, gameBoard);
+			return checkCapture(position, moveTo, gameBoard);
 		}
 
 		return false;
 	}
 
 	@Override
-	public List<Point> getLegalMoves(Point moveFrom, ChessPiece[][] gameBoard)
+	public List<Point> getLegalMoves()
 	{
 		int direction = (this.direction == Direction.DOWN) ? 1 : -1;
 		// All the moves a pawn can generally make
 		List<Point> possibleMoves = new ArrayList<>();
-		possibleMoves.add(new Point(moveFrom.x, moveFrom.y + direction));
-		possibleMoves.add(new Point(moveFrom.x, moveFrom.y + 2 * direction));
-		possibleMoves.add(new Point(moveFrom.x + 1, moveFrom.y + direction));
-		possibleMoves.add(new Point(moveFrom.x - 1, moveFrom.y + direction));
+		possibleMoves.add(new Point(position.x, position.y + direction));
+		possibleMoves.add(new Point(position.x, position.y + 2 * direction));
+		possibleMoves.add(new Point(position.x + 1, position.y + direction));
+		possibleMoves.add(new Point(position.x - 1, position.y + direction));
 
-		BoardUtility.removeIllegalMoves(possibleMoves, this, moveFrom, gameBoard);
+		BoardUtility.removeIllegalMoves(possibleMoves, this, position, gameBoard);
  		return possibleMoves;
 	}
 

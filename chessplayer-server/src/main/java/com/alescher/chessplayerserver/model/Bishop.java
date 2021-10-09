@@ -7,32 +7,31 @@ import java.util.List;
 
 public class Bishop extends ChessPiece
 {
-
-	public Bishop(Color color, Point position)
+	public Bishop(Color color, Point position, ChessPiece[][] gameBoard)
 	{
-		super(color, position);
+		super(color, position, gameBoard);
 	}
 
 	@Override
-	public boolean isLegalMove(Point moveFrom, Point moveTo, ChessPiece[][] gameBoard)
+	public boolean isLegalMove(Point moveTo)
 	{
-		if (!BoardUtility.isDiagonal(moveFrom, moveTo))
+		if (!BoardUtility.isDiagonal(position, moveTo))
 			return false;
-		if (!BoardUtility.checkPathUnobstructed(moveFrom, moveTo, gameBoard))
+		if (!BoardUtility.checkPathUnobstructed(position, moveTo, gameBoard))
 			return false;
 
 		return true;
 	}
 
 	@Override
-	public List<Point> getLegalMoves(Point moveFrom, ChessPiece[][] gameBoard)
+	public List<Point> getLegalMoves()
 	{
 		// Create directional vectors in 4 diagonal directions
 		List<Point> directions = List.of(
 				new Point(1, 1), new Point(1, -1), new Point(-1, 1), new Point(-1, -1)
 		);
 
-		return BoardUtility.generateLegalMoves(moveFrom, directions, this, gameBoard);
+		return BoardUtility.generateLegalMoves(position, directions, this, gameBoard);
 	}
 
 	@Override

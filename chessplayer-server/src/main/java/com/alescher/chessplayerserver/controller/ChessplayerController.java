@@ -27,6 +27,7 @@ public class ChessplayerController
 	@GetMapping(path="/")
 	public ModelAndView index()
 	{
+		// TODO Send setup of gameBoard to webapp
 		logger.info("Setting up new ChessBoard");
 		this.board = new ChessBoard();
 		return new ModelAndView("index.html");
