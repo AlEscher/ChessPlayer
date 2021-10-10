@@ -43,7 +43,7 @@ public class ChessBoard
 	{
 		if (gameBoard[moveFrom.y][moveFrom.x] != null)
 		{
-			return gameBoard[moveFrom.y][moveFrom.x].getLegalMoves();
+			return gameBoard[moveFrom.y][moveFrom.x].getPossibleMoves();
 		}
 		return new ArrayList<>();
 	}
@@ -81,7 +81,7 @@ public class ChessBoard
 			return false;
 		if (BoardUtility.checkFriendlyFire(moveFrom, moveTo, gameBoard))
 			return false;
-		if (!gameBoard[moveFrom.y][moveFrom.x].isLegalMove(moveTo))
+		if (!gameBoard[moveFrom.y][moveFrom.x].isPossibleMove(moveTo))
 			return false;
 
 		// Simulate the move to see if any player's king is checked

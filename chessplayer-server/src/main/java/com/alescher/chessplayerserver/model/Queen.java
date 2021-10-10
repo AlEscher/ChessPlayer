@@ -13,7 +13,7 @@ public class Queen extends ChessPiece
 	}
 
 	@Override
-	public boolean isLegalMove(Point moveTo)
+	public boolean isPossibleMove(Point moveTo)
 	{
 		if (!BoardUtility.isDiagonal(position, moveTo) && !BoardUtility.isHorizontalOrVertical(position, moveTo))
 			return false;
@@ -24,7 +24,7 @@ public class Queen extends ChessPiece
 	}
 
 	@Override
-	public List<Point> getLegalMoves()
+	public List<Point> getPossibleMoves()
 	{
 		// Create directional vectors in diagonal, vertical and horizontal directions
 		List<Point> directions = List.of(

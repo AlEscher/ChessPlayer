@@ -5,7 +5,6 @@ import com.alescher.chessplayerserver.model.Color;
 import com.alescher.chessplayerserver.model.King;
 
 import java.awt.Point;
-import java.util.List;
 
 /**
  * Keep track of which player is currently under check
@@ -60,7 +59,7 @@ public class CheckUtility
 	public void updateState(Point from, Point to)
 	{
 		// Check if moved piece attacks any king
-		gameBoard[to.y][to.x].getLegalMoves().forEach(point -> checkAttacksKing(to, point));
+		gameBoard[to.y][to.x].getPossibleMoves().forEach(point -> checkAttacksKing(to, point));
 		// TODO Check for discovery attack
 		// TODO Update state to see if king is no longer under attack
 		// TODO Save attacking pieces
@@ -87,7 +86,7 @@ public class CheckUtility
 	}
 
 	/**
-	 * Check whether this position is inhabited by a king of the opposite color.
+	 * Check whether the attacked position is inhabited by a king of the opposite color.
 	 * Updates <code>whiteChecked</code> and <code>blackChecked</code> accordingly.
 	 * @param from The tile of the piece that is attacking
 	 * @param to The tile that is being attacked

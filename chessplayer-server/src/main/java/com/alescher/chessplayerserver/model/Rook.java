@@ -13,7 +13,7 @@ public class Rook extends ChessPiece
 	}
 
 	@Override
-	public boolean isLegalMove(Point moveTo)
+	public boolean isPossibleMove(Point moveTo)
 	{
 		if (!BoardUtility.isHorizontalOrVertical(position, moveTo))
 			return false;
@@ -24,7 +24,7 @@ public class Rook extends ChessPiece
 	}
 
 	@Override
-	public List<Point> getLegalMoves()
+	public List<Point> getPossibleMoves()
 	{
 		// Create directional vectors in vertical and horizontal directions
 		List<Point> directions = List.of(

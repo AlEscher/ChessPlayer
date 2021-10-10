@@ -14,7 +14,7 @@ public class Knight extends ChessPiece
 	}
 
 	@Override
-	public boolean isLegalMove(Point moveTo)
+	public boolean isPossibleMove(Point moveTo)
 	{
 		if (Math.abs(position.x - moveTo.x) == 2 && Math.abs(position.y - moveTo.y) == 1)
 			return true;
@@ -25,7 +25,7 @@ public class Knight extends ChessPiece
 	}
 
 	@Override
-	public List<Point> getLegalMoves()
+	public List<Point> getPossibleMoves()
 	{
 		// All the moves a knight can generally make
 		List<Point> possibleMoves = new ArrayList<>();

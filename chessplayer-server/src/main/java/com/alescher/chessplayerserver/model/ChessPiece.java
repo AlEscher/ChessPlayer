@@ -8,8 +8,8 @@ import java.util.List;
 
 /**
  * An interface that every chess piece implements.
- * It offers functionality such as {@link ChessPiece#isLegalMove}
- * and {@link ChessPiece#getLegalMoves}
+ * It offers functionality such as {@link ChessPiece#isPossibleMove}
+ * and {@link ChessPiece#getPossibleMoves}
  *
  * @author AlEscher
  */
@@ -43,13 +43,13 @@ public abstract class ChessPiece
 	 * @param moveTo The position we want to move to
 	 * @return True if the move is allowed, False otherwise
 	 */
-	public abstract boolean isLegalMove(@NotNull Point moveTo);
+	public abstract boolean isPossibleMove(@NotNull Point moveTo);
 
 	/**
-	 * Calculates all moves that this piece is allowed to perform at the moment
+	 * Calculates all moves that this piece could perform
 	 * @return A list of all tiles the piece can move to
 	 */
-	public abstract List<Point> getLegalMoves();
+	public abstract List<Point> getPossibleMoves();
 
 	public abstract int getValue();
 

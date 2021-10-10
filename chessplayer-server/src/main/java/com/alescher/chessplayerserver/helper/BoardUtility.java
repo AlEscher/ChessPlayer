@@ -62,7 +62,7 @@ public class BoardUtility
 	{
 		possibleMoves.removeIf(p -> (
 				!BoardUtility.checkBounds(p)
-				|| !piece.isLegalMove(p)
+				|| !piece.isPossibleMove(p)
 				|| BoardUtility.checkFriendlyFire(moveFrom, p, gameBoard)));
 	}
 	/**
