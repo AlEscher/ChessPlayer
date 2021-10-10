@@ -3,8 +3,13 @@ package com.alescher.chessplayerserver.helper;
 import com.alescher.chessplayerserver.model.ChessPiece;
 import com.alescher.chessplayerserver.model.Color;
 import com.alescher.chessplayerserver.model.King;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Keep track of which player is currently under check
@@ -15,6 +20,9 @@ public class CheckUtility
 	private final ChessPiece[][] gameBoard;
 	private final King whiteKing;
 	private final King blackKing;
+	private final List<ChessPiece> whiteAttackers;
+	private final List<ChessPiece> blackAttackers;
+	private static final Logger logger = LoggerFactory.getLogger(CheckUtility.class);
 	private boolean whiteChecked = false;
 	private boolean blackChecked = false;
 
@@ -22,26 +30,39 @@ public class CheckUtility
 	{
 		if (king1.getColor() == Color.WHITE)
 		{
-			whiteKing = (King)king1;
-			blackKing = (King)king2;
+			this.whiteKing = (King)king1;
+			this.blackKing = (King)king2;
 		}
 		else
 		{
-			blackKing = (King)king1;
-			whiteKing = (King)king2;
+			this.blackKing = (King)king1;
+			this.whiteKing = (King)king2;
 		}
 		this.gameBoard = gameBoard;
+		this.whiteAttackers = new ArrayList<>();
+		this.blackAttackers = new ArrayList<>();
 	}
 
 	/**
 	 * Checks if a simulated move is allowed.
 	 * A move is illegal if it endangers the own king, i.e. if the own king would be under check after the move.
-	 * @param from The starting tile
-	 * @param to The tile the piece is moving to
+	 * @param from The tile the piece moved from
+	 * @param to The tile the piece is currently on
 	 * @return <code>true</code> if the move is allowed
 	 */
 	public boolean isMoveLegal(Point from, Point to)
 	{
+		// A player should not be making a move if the enemies king was already under check
+		assert !(gameBoard[to.y][to.x].getColor() == Color.WHITE && this.blackChecked);
+		assert !(gameBoard[to.y][to.x].getColor() == Color.BLACK && this.whiteChecked);
+
+		if (!checkPreviousAttackers())
+			return false;
+
+		whiteAttackers.clear();
+		blackAttackers.clear();
+		whiteChecked = blackChecked = false;
+		// No previous threats, update the state for the new simulated move
 		updateState(from, to);
 		Color player = gameBoard[to.y][to.x].getColor();
 		if (player == Color.WHITE)
@@ -58,11 +79,11 @@ public class CheckUtility
 	 */
 	public void updateState(Point from, Point to)
 	{
+		logger.info("Updating CheckUtility state");
 		// Check if moved piece attacks any king
 		gameBoard[to.y][to.x].getPossibleMoves().forEach(point -> checkAttacksKing(to, point));
+		logger.info(String.format("CheckUtility updated: %s", this));
 		// TODO Check for discovery attack
-		// TODO Update state to see if king is no longer under attack
-		// TODO Save attacking pieces
 	}
 
 	/**
@@ -72,7 +93,7 @@ public class CheckUtility
 	 */
 	public boolean isWhiteChecked()
 	{
-		return whiteChecked;
+		return this.whiteChecked;
 	}
 
 	/**
@@ -82,7 +103,29 @@ public class CheckUtility
 	 */
 	public boolean isBlackChecked()
 	{
-		return blackChecked;
+		return this.blackChecked;
+	}
+
+	/**
+	 * Check whether the attacked position is inhabited by a king of the opposite color.
+	 * @param from The tile of the piece that is attacking
+	 * @param to The tile that is being attacked
+	 * @return Optional containing the king being attacked, empty if no king is attacked.
+	 */
+	private Optional<ChessPiece> getAttackedKing(Point from, Point to)
+	{
+		if (gameBoard[to.y][to.x] == null)
+			return Optional.empty();
+
+		ChessPiece attackingPiece = gameBoard[from.y][from.x];
+		ChessPiece attackedPiece = gameBoard[to.y][to.x];
+		if ((attackedPiece.equals(whiteKing) && attackingPiece.getColor() == Color.BLACK)
+		 || (attackedPiece.equals(blackKing) && attackingPiece.getColor() == Color.WHITE))
+		{
+			return Optional.of(attackedPiece);
+		}
+
+		return Optional.empty();
 	}
 
 	/**
@@ -93,18 +136,51 @@ public class CheckUtility
 	 */
 	private void checkAttacksKing(Point from, Point to)
 	{
-		if (gameBoard[to.y][to.x] == null)
+		Optional<ChessPiece> attackedKing = getAttackedKing(from, to);
+		if (attackedKing.isEmpty())
+		{
 			return;
+		}
+		else if (attackedKing.get().getColor() == Color.WHITE)
+		{
+			whiteChecked = true;
+			blackAttackers.add(gameBoard[from.y][from.x]);
+		}
+		else if (attackedKing.get().getColor() == Color.BLACK)
+		{
+			blackChecked = true;
+			whiteAttackers.add(gameBoard[from.y][from.x]);
+		}
+	}
 
-		Color attackingColor = gameBoard[from.y][from.x].getColor();
-		ChessPiece attackedPiece = gameBoard[to.y][to.x];
-		if (attackedPiece.equals(whiteKing) && attackingColor == Color.BLACK)
-		{
-			this.whiteChecked = true;
-		}
-		else if (attackedPiece.equals(blackKing) && attackingColor == Color.WHITE)
-		{
-			this.blackChecked = true;
-		}
+	/**
+	 * Check whether previous threats have been eliminated
+	 * @return <code>true</code> if there are no current threats, <code>false</code> otherwise
+	 */
+	private boolean checkPreviousAttackers()
+	{
+		// Only one king can be under attack at any given time
+		assert (this.blackAttackers.isEmpty() || this.whiteAttackers.isEmpty());
+
+		List<ChessPiece> currentAttackers = blackAttackers.isEmpty() ? whiteAttackers : blackAttackers;
+		logger.info(String.format("Checking previous %d attackers", currentAttackers.size()));
+		// Filter out all attackers that are no longer a threat
+		List<ChessPiece> remainingAttackers = currentAttackers
+				.stream()
+				.filter(chessPiece ->
+					chessPiece.getPossibleMoves()
+							.stream()
+							.anyMatch(point -> !getAttackedKing(chessPiece.getPosition(), point).isEmpty()))
+				.toList();
+		logger.info(String.format("%d attackers remain", remainingAttackers.size()));
+
+		return remainingAttackers.isEmpty();
+	}
+
+	@Override
+	public String toString()
+	{
+		return String.format("{ whiteChecked: %b, blackAttackers: %s, blackChecked: %b, whiteAttackers: %s }",
+				this.whiteChecked, this.blackAttackers, this.blackChecked, this.whiteAttackers);
 	}
 }

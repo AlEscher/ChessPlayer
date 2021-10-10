@@ -1,11 +1,12 @@
 package com.alescher.chessplayerserver.model;
 
-import com.alescher.chessplayerserver.controller.ChessplayerController;
 import com.alescher.chessplayerserver.helper.BoardUtility;
 import com.alescher.chessplayerserver.helper.CheckUtility;
 import com.alescher.chessplayerserver.helper.ChessPositionConverter;
 import com.alescher.chessplayerserver.helper.Move;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class ChessBoard
 	private final Stack<Move> pastMoves;
 	private final CheckUtility checkUtility;
 	private Color currentTurn;
+	private static final Logger logger = LoggerFactory.getLogger(ChessBoard.class);
 
 	public ChessBoard()
 	{
@@ -60,14 +62,20 @@ public class ChessBoard
 		Point fromPoint = ChessPositionConverter.convertTileToPoint(fromTile);
 		Point toPoint = ChessPositionConverter.convertTileToPoint(toTile);
 
-		ChessplayerController.logger.info(String.format("Checking move from %s to %s", fromPoint, toPoint));
+		logger.info(String.format("Checking move from %s to %s", fromPoint, toPoint));
 		// Check bounds
 		if (!BoardUtility.checkBounds(fromPoint) || !BoardUtility.checkBounds(toPoint))
 			return false;
 
 		boolean isLegal = isLegalMove(fromPoint, toPoint);
-		if (isLegal) makeMove(fromPoint, toPoint); // If the move is allowed, update our gameBoard
+		if (isLegal)
+		{
+			// If the move is allowed, update our gameBoard
+			makeMove(fromPoint, toPoint);
+			swapTurn();
+		}
 
+		logger.info(String.format("Move checked. Legal: %b, current turn: %s", isLegal, currentTurn));
 		return isLegal;
 	}
 
@@ -107,18 +115,19 @@ public class ChessBoard
 
 	/**
 	 * Checks that the piece to be moved belongs to the player whose turn it currently is.
-	 * Also updates the currentTurn for the next move.
 	 *
 	 * @param moveFrom The piece to be moved
 	 * @return True if it's the correct player's turn, false otherwise
 	 */
 	private boolean checkTurn(Point moveFrom)
 	{
-		if (gameBoard[moveFrom.y][moveFrom.x].getColor() != currentTurn)
-			return false;
+		return gameBoard[moveFrom.y][moveFrom.x].getColor() == currentTurn;
+	}
 
+	/** Updates the current turn to the next player */
+	private void swapTurn()
+	{
 		currentTurn = (currentTurn == Color.WHITE) ? Color.BLACK : Color.WHITE;
-		return true;
 	}
 
 	/**
@@ -133,11 +142,14 @@ public class ChessBoard
 	{
 		// TODO: Handle capture (points update, etc...)
 		pastMoves.push(new Move(from, to, gameBoard[to.y][to.x]));
+
+		if (gameBoard[to.y][to.x] != null)
+			gameBoard[to.y][to.x].setPosition(null);
 		gameBoard[to.y][to.x] = gameBoard[from.y][from.x];
 		gameBoard[from.y][from.x] = null;
-		gameBoard[to.y][to.x].setPosition(to);
+		BoardUtility.updatePiecePosition(to, gameBoard);
 
-		if (log) ChessplayerController.logger.info(String.valueOf(this));
+		if (log) logger.info(String.valueOf(this));
 	}
 
 	private void makeMove(Point from, Point to)
@@ -189,5 +201,10 @@ public class ChessBoard
 		builder.append("---------------------------------");
 
 		return builder.toString();
+	}
+
+	public Color getCurrentTurn()
+	{
+		return currentTurn;
 	}
 }

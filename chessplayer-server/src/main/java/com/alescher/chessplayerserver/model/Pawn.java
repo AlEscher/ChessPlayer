@@ -31,7 +31,7 @@ public class Pawn extends ChessPiece
 	}
 
 	@Override
-	public boolean isPossibleMove(Point moveTo)
+	public boolean checkMove(Point moveTo)
 	{
 		updateDidMove(position);
 		// Check that we are moving in the correct direction
@@ -53,7 +53,7 @@ public class Pawn extends ChessPiece
 	}
 
 	@Override
-	public List<Point> getPossibleMoves()
+	public List<Point> calculatePossibleMoves()
 	{
 		int direction = (this.direction == Direction.DOWN) ? 1 : -1;
 		// All the moves a pawn can generally make

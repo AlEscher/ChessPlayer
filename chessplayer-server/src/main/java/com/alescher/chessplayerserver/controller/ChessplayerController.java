@@ -10,14 +10,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.awt.Point;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class ChessplayerController
 {
 	private ChessBoard board;
 
-	public static Logger logger = LoggerFactory.getLogger(ChessplayerController.class);
+	public static final Logger logger = LoggerFactory.getLogger(ChessplayerController.class);
 
 	public ChessplayerController()
 	{
@@ -55,7 +54,7 @@ public class ChessplayerController
 		List<String> possibleMoves = board.getLegalMoves(moveFrom)
 				.stream()
 				.map(p -> ChessPositionConverter.convertPointToTile(p))
-				.collect(Collectors.toList());
+				.toList();
 
 		MoveResponseEntity moveResponse = MoveResponseEntity.create(fromTile, pieceID, possibleMoves);
 		logger.info("Sending response: " + moveResponse);

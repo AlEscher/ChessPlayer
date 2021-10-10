@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,13 +44,29 @@ public abstract class ChessPiece
 	 * @param moveTo The position we want to move to
 	 * @return True if the move is allowed, False otherwise
 	 */
-	public abstract boolean isPossibleMove(@NotNull Point moveTo);
+	public boolean isPossibleMove(@NotNull Point moveTo)
+	{
+		if (position == null)
+			return false;
+
+		return checkMove(moveTo);
+	}
 
 	/**
 	 * Calculates all moves that this piece could perform
 	 * @return A list of all tiles the piece can move to
 	 */
-	public abstract List<Point> getPossibleMoves();
+	public List<Point> getPossibleMoves()
+	{
+		if (position == null)
+			return new ArrayList<>();
+
+		return calculatePossibleMoves();
+	}
+
+	protected abstract List<Point> calculatePossibleMoves();
+
+	protected abstract boolean checkMove(Point to);
 
 	public abstract int getValue();
 
@@ -58,11 +75,16 @@ public abstract class ChessPiece
 		return color;
 	}
 
+	/**@return The piece's position, <code>null</code> if this piece is no longer on the board */
 	public Point getPosition()
 	{
 		return position;
 	}
 
+	/**
+	 * Update the piece's position
+	 * @param position The new position, <code>null</code> if this piece was captured
+	 */
 	public void setPosition(@Nullable Point position)
 	{
 		this.position = position;

@@ -14,7 +14,7 @@ public class King extends ChessPiece
 	}
 
 	@Override
-	public boolean isPossibleMove(Point moveTo)
+	public boolean checkMove(Point moveTo)
 	{
 		if (Math.abs(position.x - moveTo.x) > 1 || Math.abs(position.y - moveTo.y) > 1)
 			return false;
@@ -23,7 +23,7 @@ public class King extends ChessPiece
 	}
 
 	@Override
-	public List<Point> getPossibleMoves()
+	public List<Point> calculatePossibleMoves()
 	{
 		// All the moves a king can generally make
 		List<Point> possibleMoves = new ArrayList<>();
