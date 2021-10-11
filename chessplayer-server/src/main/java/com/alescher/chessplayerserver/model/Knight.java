@@ -38,7 +38,7 @@ public class Knight extends ChessPiece
 		possibleMoves.add(new Point(position.x - 1, position.y + 2));
 		possibleMoves.add(new Point(position.x - 1, position.y - 2));
 
-		BoardUtility.removeIllegalMoves(possibleMoves, this, position, gameBoard);
+		BoardUtility.removeImpossibleMoves(possibleMoves, this, position, gameBoard);
 		return possibleMoves;
 	}
 

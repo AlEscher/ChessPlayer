@@ -45,7 +45,10 @@ public class ChessBoard
 	{
 		if (gameBoard[moveFrom.y][moveFrom.x] != null)
 		{
-			return gameBoard[moveFrom.y][moveFrom.x].getPossibleMoves();
+			return gameBoard[moveFrom.y][moveFrom.x].getPossibleMoves()
+					.stream()
+					.filter(move -> isLegalMove(moveFrom, move, false))
+					.toList();
 		}
 		return new ArrayList<>();
 	}
@@ -81,6 +84,11 @@ public class ChessBoard
 
 	private boolean isLegalMove(Point moveFrom, Point moveTo)
 	{
+		return isLegalMove(moveFrom, moveTo, true);
+	}
+
+	private boolean isLegalMove(Point moveFrom, Point moveTo, boolean keepState)
+	{
 		if (gameBoard[moveFrom.y][moveFrom.x] == null)
 			return false;
 		if (moveFrom.equals(moveTo))
@@ -94,7 +102,7 @@ public class ChessBoard
 
 		// Simulate the move to see if any player's king is checked
 		makeMove(moveFrom, moveTo, false);
-		boolean isLegal = checkUtility.isMoveLegal(moveFrom, moveTo);
+		boolean isLegal = checkUtility.isMoveLegal(moveFrom, moveTo, keepState);
 		undoMove();
 
 		return isLegal;

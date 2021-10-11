@@ -31,7 +31,7 @@ public class Bishop extends ChessPiece
 				new Point(1, 1), new Point(1, -1), new Point(-1, 1), new Point(-1, -1)
 		);
 
-		return BoardUtility.generateLegalMoves(position, directions, this, gameBoard);
+		return BoardUtility.generatePossibleMoves(position, directions, this, gameBoard);
 	}
 
 	@Override

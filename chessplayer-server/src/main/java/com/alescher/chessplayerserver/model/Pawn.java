@@ -63,7 +63,7 @@ public class Pawn extends ChessPiece
 		possibleMoves.add(new Point(position.x + 1, position.y + direction));
 		possibleMoves.add(new Point(position.x - 1, position.y + direction));
 
-		BoardUtility.removeIllegalMoves(possibleMoves, this, position, gameBoard);
+		BoardUtility.removeImpossibleMoves(possibleMoves, this, position, gameBoard);
  		return possibleMoves;
 	}
 

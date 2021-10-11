@@ -36,7 +36,7 @@ public class King extends ChessPiece
 		possibleMoves.add(new Point(position.x - 1, position.y));
 		possibleMoves.add(new Point(position.x + 1, position.y));
 
-		BoardUtility.removeIllegalMoves(possibleMoves, this, position, gameBoard);
+		BoardUtility.removeImpossibleMoves(possibleMoves, this, position, gameBoard);
 		return possibleMoves;
 	}
 

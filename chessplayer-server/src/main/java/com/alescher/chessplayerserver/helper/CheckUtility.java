@@ -20,8 +20,8 @@ public class CheckUtility
 	private final ChessPiece[][] gameBoard;
 	private final King whiteKing;
 	private final King blackKing;
-	private final List<ChessPiece> whiteAttackers;
-	private final List<ChessPiece> blackAttackers;
+	private List<ChessPiece> whiteAttackers;
+	private List<ChessPiece> blackAttackers;
 	private static final Logger logger = LoggerFactory.getLogger(CheckUtility.class);
 	private boolean whiteChecked = false;
 	private boolean blackChecked = false;
@@ -48,9 +48,10 @@ public class CheckUtility
 	 * A move is illegal if it endangers the own king, i.e. if the own king would be under check after the move.
 	 * @param from The tile the piece moved from
 	 * @param to The tile the piece is currently on
+	 * @param keepState Whether the computed state should be kept or reset before the function exits
 	 * @return <code>true</code> if the move is allowed
 	 */
-	public boolean isMoveLegal(Point from, Point to)
+	public boolean isMoveLegal(Point from, Point to, boolean keepState)
 	{
 		// A player should not be making a move if the enemies king was already under check
 		assert !(gameBoard[to.y][to.x].getColor() == Color.WHITE && this.blackChecked);
@@ -59,16 +60,19 @@ public class CheckUtility
 		if (!checkPreviousAttackers())
 			return false;
 
+		CheckState backup = new CheckState(whiteChecked, blackChecked, whiteAttackers, blackAttackers);
+
 		whiteAttackers.clear();
 		blackAttackers.clear();
 		whiteChecked = blackChecked = false;
 		// No previous threats, update the state for the new simulated move
 		updateState(from, to);
 		Color player = gameBoard[to.y][to.x].getColor();
-		if (player == Color.WHITE)
-			return !isWhiteChecked();
-		else
-			return !isBlackChecked();
+		boolean isLegal = (player == Color.WHITE) ? !isWhiteChecked() : !isBlackChecked();
+
+		if (!keepState) resetState(backup);
+
+		return isLegal;
 	}
 
 	/**
@@ -79,7 +83,7 @@ public class CheckUtility
 	 */
 	public void updateState(Point from, Point to)
 	{
-		logger.info("Updating CheckUtility state");
+		logger.info(String.format("Updating CheckUtility state. Current: %s", this));
 		// Check if moved piece attacks any king
 		gameBoard[to.y][to.x].getPossibleMoves().forEach(point -> checkAttacksKing(to, point));
 		logger.info(String.format("CheckUtility updated: %s", this));
@@ -177,10 +181,32 @@ public class CheckUtility
 		return remainingAttackers.isEmpty();
 	}
 
+	/** Reset this objects internal state to a previously saved one */
+	private void resetState(CheckState oldState)
+	{
+		this.whiteChecked = oldState.whiteChecked;
+		this.blackChecked = oldState.blackChecked;
+		this.whiteAttackers = oldState.whiteAttackers;
+		this.blackAttackers = oldState.blackAttackers;
+	}
+
 	@Override
 	public String toString()
 	{
 		return String.format("{ whiteChecked: %b, blackAttackers: %s, blackChecked: %b, whiteAttackers: %s }",
 				this.whiteChecked, this.blackAttackers, this.blackChecked, this.whiteAttackers);
+	}
+
+	private record CheckState(boolean whiteChecked, boolean blackChecked,
+	                         List<ChessPiece> whiteAttackers,
+	                         List<ChessPiece> blackAttackers)
+	{
+		private CheckState(boolean whiteChecked, boolean blackChecked, List<ChessPiece> whiteAttackers, List<ChessPiece> blackAttackers)
+		{
+			this.whiteChecked = whiteChecked;
+			this.blackChecked = blackChecked;
+			this.whiteAttackers = new ArrayList<>(whiteAttackers);
+			this.blackAttackers = new ArrayList<>(blackAttackers);
+		}
 	}
 }

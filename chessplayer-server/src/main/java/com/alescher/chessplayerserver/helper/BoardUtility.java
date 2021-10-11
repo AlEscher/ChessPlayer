@@ -13,14 +13,14 @@ import java.util.List;
 public class BoardUtility
 {
 	/**
-	 * Given a list of directional vectors, generates all legal moves a piece can make
+	 * Given a list of directional vectors, generates all possible moves a piece can make
 	 * @param moveFrom The starting position
 	 * @param directions The directional vectors (of length 1)
 	 * @param piece The piece to be moved
 	 * @param gameBoard The chessboard
-	 * @return A list of all legal generated moves
+	 * @return A list of all generated moves
 	 */
-	public static List<Point> generateLegalMoves(Point moveFrom, List<Point> directions, ChessPiece piece, ChessPiece[][] gameBoard)
+	public static List<Point> generatePossibleMoves(Point moveFrom, List<Point> directions, ChessPiece piece, ChessPiece[][] gameBoard)
 	{
 		List<Point> possibleMoves = new ArrayList<>();
 		// For each directional vector, create new positions until we reach an obstacle
@@ -36,7 +36,7 @@ public class BoardUtility
 					break;
 				}
 				// If we reach an enemy piece we have reached the last viable position in this direction
-				else if ((gameBoard[p.y][p.x] != null && gameBoard[p.y][p.x].getColor() != piece.getColor()))
+				else if (gameBoard[p.y][p.x] != null && gameBoard[p.y][p.x].getColor() != piece.getColor())
 				{
 					possibleMoves.add(p);
 					break;
@@ -51,16 +51,16 @@ public class BoardUtility
 		return possibleMoves;
 	}
 	/**
-	 * Removes all illegal moves from a given set of moves.
-	 * possibleMoves will only contain legal moves after this method is called.
-	 * @param possibleMoves The positions we can move to
+	 * Removes all moves that are not allowed for this piece from a given set of moves.
+	 * PossibleMoves will only contain allowed moves after this method is called.
+	 * @param moves The positions we want to check
 	 * @param piece The piece we want to move
-	 * @param moveFrom The positions we are moving from
+	 * @param moveFrom The position we are moving from
 	 * @param gameBoard The chessboard
 	 */
-	public static void removeIllegalMoves(List<Point> possibleMoves, ChessPiece piece, Point moveFrom, ChessPiece[][] gameBoard)
+	public static void removeImpossibleMoves(List<Point> moves, ChessPiece piece, Point moveFrom, ChessPiece[][] gameBoard)
 	{
-		possibleMoves.removeIf(p -> (
+		moves.removeIf(p -> (
 				!BoardUtility.checkBounds(p)
 				|| !piece.isPossibleMove(p)
 				|| BoardUtility.checkFriendlyFire(moveFrom, p, gameBoard)));
