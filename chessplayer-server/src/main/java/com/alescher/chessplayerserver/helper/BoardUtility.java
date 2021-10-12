@@ -5,6 +5,7 @@ import com.alescher.chessplayerserver.model.ChessPiece;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Utility functions for checking things on our chessboard
@@ -77,11 +78,8 @@ public class BoardUtility
 	public static boolean checkPathUnobstructed(Point moveFrom, Point moveTo, ChessPiece[][] gameBoard)
 	{
 		Point direction = new Point(moveTo.x - moveFrom.x, moveTo.y - moveFrom.y);
-		// If we are walking diagonally, direction.x and direction.y will be the length.
-		// If we are walking horizontally / vertically, then the value != 0 will be the length.
 		double length = Math.max(Math.abs(direction.x), Math.abs(direction.y));
-		direction.x /= length;
-		direction.y /= length;
+		normalizeDirectionalVector(direction);
 
 		for (int i = 1; i < length; i++)
 		{
@@ -148,5 +146,39 @@ public class BoardUtility
 	{
 		if (gameBoard[p.y][p.x] != null)
 			gameBoard[p.y][p.x].setPosition(p);
+	}
+
+	/**
+	 * Given a starting point and a directional vector, gets the first chess piece in the path.
+	 * Does not check the starting point.
+	 * @param start The starting point
+	 * @param direction The direction
+	 * @param gameBoard The gameboard
+	 * @return An <code>Optional</code> containing the piece, empty if there was no piece in the path
+	 */
+	public static Optional<ChessPiece> getFirstPieceInPath(Point start, Point direction, ChessPiece[][] gameBoard)
+	{
+		for (int i = 1; i < gameBoard.length; i++)
+		{
+			Point next = new Point(start.x + i * direction.x, start.y + i * direction.y);
+			if (!checkBounds(next)) break;
+			if (gameBoard[next.y][next.x] != null) return Optional.of(gameBoard[next.y][next.x]);
+		}
+
+		return Optional.empty();
+	}
+
+	/**
+	 * Sets the given directional vector to be of length 1, e.g. (3, 3) -> (1, 1) or (2, 0) -> (1, 0).
+	 * For the chessboard, directional vectors can only be horizontal, vertical or diagonal
+	 * @param direction The directional vector to be normalized
+	 */
+	public static void normalizeDirectionalVector(Point direction)
+	{
+		// If we are walking diagonally, direction.x and direction.y will be the length.
+		// If we are walking horizontally / vertically, then the value != 0 will be the length.
+		double length = Math.max(Math.abs(direction.x), Math.abs(direction.y));
+		direction.x /= length;
+		direction.y /= length;
 	}
 }

@@ -1,10 +1,9 @@
 package com.alescher.chessplayerserver.helper;
 
-import com.alescher.chessplayerserver.model.ChessPiece;
-import com.alescher.chessplayerserver.model.Color;
-import com.alescher.chessplayerserver.model.King;
+import com.alescher.chessplayerserver.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -23,8 +22,6 @@ public class CheckUtility
 	private List<ChessPiece> whiteAttackers;
 	private List<ChessPiece> blackAttackers;
 	private static final Logger logger = LoggerFactory.getLogger(CheckUtility.class);
-	private boolean whiteChecked = false;
-	private boolean blackChecked = false;
 
 	public CheckUtility(ChessPiece[][] gameBoard, ChessPiece king1, ChessPiece king2)
 	{
@@ -53,30 +50,30 @@ public class CheckUtility
 	 */
 	public boolean isMoveLegal(Point from, Point to, boolean keepState)
 	{
-		// A player should not be making a move if the enemies king was already under check
-		assert !(gameBoard[to.y][to.x].getColor() == Color.WHITE && this.blackChecked);
-		assert !(gameBoard[to.y][to.x].getColor() == Color.BLACK && this.whiteChecked);
+		Assert.state(!(gameBoard[to.y][to.x].getColor() == Color.WHITE && isBlackChecked()),
+				"A player should not be making a move if the enemies king was already under check");
+		Assert.state(!(gameBoard[to.y][to.x].getColor() == Color.BLACK && isWhiteChecked()),
+				"A player should not be making a move if the enemies king was already under check");
 
 		if (!checkPreviousAttackers())
 			return false;
 
-		CheckState backup = new CheckState(whiteChecked, blackChecked, whiteAttackers, blackAttackers);
+		CheckState backup = new CheckState(whiteAttackers, blackAttackers);
 
 		whiteAttackers.clear();
 		blackAttackers.clear();
-		whiteChecked = blackChecked = false;
 		// No previous threats, update the state for the new simulated move
 		updateState(from, to);
 		Color player = gameBoard[to.y][to.x].getColor();
 		boolean isLegal = (player == Color.WHITE) ? !isWhiteChecked() : !isBlackChecked();
 
-		if (!keepState) resetState(backup);
+		if (!keepState || !isLegal) resetState(backup);
 
 		return isLegal;
 	}
 
 	/**
-	 * Checks if any player is checked and updates <code>this.whiteChecked</code> and <code>this.blackChecked</code>
+	 * Checks if any player is checked and updates <code>whiteAttackers</code> and <code>blackAttackers</code>
 	 * accordingly.
 	 * @param from The tile the piece moved from
 	 * @param to The tile the piece is currently on
@@ -86,8 +83,8 @@ public class CheckUtility
 		logger.info(String.format("Updating CheckUtility state. Current: %s", this));
 		// Check if moved piece attacks any king
 		gameBoard[to.y][to.x].getPossibleMoves().forEach(point -> checkAttacksKing(to, point));
+		detectDiscoveryAttacks(from);
 		logger.info(String.format("CheckUtility updated: %s", this));
-		// TODO Check for discovery attack
 	}
 
 	/**
@@ -97,7 +94,7 @@ public class CheckUtility
 	 */
 	public boolean isWhiteChecked()
 	{
-		return this.whiteChecked;
+		return this.blackAttackers.size() > 0;
 	}
 
 	/**
@@ -107,7 +104,7 @@ public class CheckUtility
 	 */
 	public boolean isBlackChecked()
 	{
-		return this.blackChecked;
+		return this.whiteAttackers.size() > 0;
 	}
 
 	/**
@@ -134,26 +131,26 @@ public class CheckUtility
 
 	/**
 	 * Check whether the attacked position is inhabited by a king of the opposite color.
-	 * Updates <code>whiteChecked</code> and <code>blackChecked</code> accordingly.
+	 * Updates <code>whiteAttackers</code> and <code>blackAttackers</code> accordingly.
 	 * @param from The tile of the piece that is attacking
 	 * @param to The tile that is being attacked
 	 */
 	private void checkAttacksKing(Point from, Point to)
 	{
 		Optional<ChessPiece> attackedKing = getAttackedKing(from, to);
-		if (attackedKing.isEmpty())
+		attackedKing.ifPresent(king -> handleCheck(gameBoard[from.y][from.x], king));
+	}
+
+	/** Sets the correct check-attributes and adds the attacker to the correct list */
+	private void handleCheck(ChessPiece attacker, ChessPiece king)
+	{
+		if (king.getColor() == Color.WHITE)
 		{
-			return;
+			blackAttackers.add(attacker);
 		}
-		else if (attackedKing.get().getColor() == Color.WHITE)
+		else if (king.getColor() == Color.BLACK)
 		{
-			whiteChecked = true;
-			blackAttackers.add(gameBoard[from.y][from.x]);
-		}
-		else if (attackedKing.get().getColor() == Color.BLACK)
-		{
-			blackChecked = true;
-			whiteAttackers.add(gameBoard[from.y][from.x]);
+			whiteAttackers.add(attacker);
 		}
 	}
 
@@ -163,8 +160,8 @@ public class CheckUtility
 	 */
 	private boolean checkPreviousAttackers()
 	{
-		// Only one king can be under attack at any given time
-		assert (this.blackAttackers.isEmpty() || this.whiteAttackers.isEmpty());
+		Assert.state(this.blackAttackers.isEmpty() || this.whiteAttackers.isEmpty(),
+				"Only one king should be under attack at any given time");
 
 		List<ChessPiece> currentAttackers = blackAttackers.isEmpty() ? whiteAttackers : blackAttackers;
 		logger.info(String.format("Checking previous %d attackers", currentAttackers.size()));
@@ -174,18 +171,72 @@ public class CheckUtility
 				.filter(chessPiece ->
 					chessPiece.getPossibleMoves()
 							.stream()
-							.anyMatch(point -> !getAttackedKing(chessPiece.getPosition(), point).isEmpty()))
+							.anyMatch(point -> getAttackedKing(chessPiece.getPosition(), point).isPresent()))
 				.toList();
 		logger.info(String.format("%d attackers remain", remainingAttackers.size()));
 
 		return remainingAttackers.isEmpty();
 	}
 
+	/**
+	 * Check if a discovery attack has occurred after this simulated move
+	 * @param from The position the piece was previously on
+	 */
+	private void detectDiscoveryAttacks(Point from)
+	{
+		checkHorizontalDiscovery(from, whiteKing);
+		checkHorizontalDiscovery(from, blackKing);
+		checkDiagonalDiscovery(from, whiteKing);
+		checkDiagonalDiscovery(from, blackKing);
+	}
+
+	/** Check for a horizontal or vertical discovery attack against the specified king */
+	private void checkHorizontalDiscovery(Point from, King king)
+	{
+		// Only Bishops, Rooks and Queens can be part of a discovery attack, so
+		// the now empty position and the king's position need to be on a line
+		if (BoardUtility.isHorizontalOrVertical(from, king.getPosition())
+				&& BoardUtility.checkPathUnobstructed(king.getPosition(), from, gameBoard))
+		{
+			checkDiscoveryAttack(from, king, List.of(Rook.class, Queen.class));
+		}
+	}
+
+	/** Check for a diagonal discovery attack against the specified king */
+	private void checkDiagonalDiscovery(Point from, King king)
+	{
+		// Only Bishops, Rooks and Queens can be part of a discovery attack, so
+		// the now empty position and the king's position need to be on a line
+		if (BoardUtility.isDiagonal(from, king.getPosition())
+				&& BoardUtility.checkPathUnobstructed(king.getPosition(), from, gameBoard))
+		{
+			checkDiscoveryAttack(from, king, List.of(Bishop.class, Queen.class));
+		}
+	}
+
+	/**
+	 * Checks a single line for a discovery attack against the specified king.
+	 * @param from The position were a piece just moved from
+	 * @param king The specified king
+	 */
+	private void checkDiscoveryAttack(Point from, King king, List<Class<?>> possibleAttackerClasses)
+	{
+		// We want to go in the opposite direction of the king, to check what was "behind" the piece that was just moved
+		Point direction = new Point(from.x - king.getPosition().x, from.y - king.getPosition().y);
+		BoardUtility.normalizeDirectionalVector(direction);
+		Optional<ChessPiece> firstPiece = BoardUtility.getFirstPieceInPath(from, direction, gameBoard);
+		firstPiece.ifPresent(chessPiece ->
+		{
+			if (possibleAttackerClasses.contains(chessPiece.getClass()) && chessPiece.getColor() != king.getColor())
+			{
+				handleCheck(chessPiece, king);
+			}
+		});
+	}
+
 	/** Reset this objects internal state to a previously saved one */
 	private void resetState(CheckState oldState)
 	{
-		this.whiteChecked = oldState.whiteChecked;
-		this.blackChecked = oldState.blackChecked;
 		this.whiteAttackers = oldState.whiteAttackers;
 		this.blackAttackers = oldState.blackAttackers;
 	}
@@ -194,17 +245,14 @@ public class CheckUtility
 	public String toString()
 	{
 		return String.format("{ whiteChecked: %b, blackAttackers: %s, blackChecked: %b, whiteAttackers: %s }",
-				this.whiteChecked, this.blackAttackers, this.blackChecked, this.whiteAttackers);
+				isWhiteChecked(), this.blackAttackers, isBlackChecked(), this.whiteAttackers);
 	}
 
-	private record CheckState(boolean whiteChecked, boolean blackChecked,
-	                         List<ChessPiece> whiteAttackers,
+	private record CheckState(List<ChessPiece> whiteAttackers,
 	                         List<ChessPiece> blackAttackers)
 	{
-		private CheckState(boolean whiteChecked, boolean blackChecked, List<ChessPiece> whiteAttackers, List<ChessPiece> blackAttackers)
+		private CheckState(List<ChessPiece> whiteAttackers, List<ChessPiece> blackAttackers)
 		{
-			this.whiteChecked = whiteChecked;
-			this.blackChecked = blackChecked;
 			this.whiteAttackers = new ArrayList<>(whiteAttackers);
 			this.blackAttackers = new ArrayList<>(blackAttackers);
 		}
