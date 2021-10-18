@@ -5,6 +5,7 @@ import com.alescher.chessplayerserver.helper.CheckUtility;
 import com.alescher.chessplayerserver.helper.ChessPositionConverter;
 import com.alescher.chessplayerserver.helper.Move;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,8 @@ public class ChessBoard
 	private final Stack<Move> pastMoves;
 	private final CheckUtility checkUtility;
 	private Color currentTurn;
+	private Color checkMated = null;
+	private boolean gameOver = false;
 	private static final Logger logger = LoggerFactory.getLogger(ChessBoard.class);
 
 	public ChessBoard()
@@ -31,7 +34,7 @@ public class ChessBoard
 		this.gameBoard = new ChessPiece[8][8];
 		setupBoard();
 		this.pastMoves = new Stack<>();
-		this.checkUtility = new CheckUtility(gameBoard, gameBoard[0][4], gameBoard[7][4]);
+		this.checkUtility = new CheckUtility(this, gameBoard, gameBoard[0][4], gameBoard[7][4]);
 		this.currentTurn = Color.WHITE;
 	}
 
@@ -43,14 +46,23 @@ public class ChessBoard
 	 */
 	public List<Point> getLegalMoves(@NotNull Point moveFrom)
 	{
-		if (gameBoard[moveFrom.y][moveFrom.x] != null)
-		{
-			return gameBoard[moveFrom.y][moveFrom.x].getPossibleMoves()
-					.stream()
-					.filter(move -> isLegalMove(moveFrom, move, false))
-					.toList();
-		}
-		return new ArrayList<>();
+		return getLegalMoves(gameBoard[moveFrom.y][moveFrom.x]);
+	}
+
+	/**
+	 * Get all legal moves for a specified chess piece
+	 *
+	 * @param piece The chess piece
+	 * @return A list of points where the piece can move to
+	 */
+	public List<Point> getLegalMoves(@Nullable ChessPiece piece)
+	{
+		if (piece == null) return new ArrayList<>();
+
+		return piece.getPossibleMoves()
+				.stream()
+				.filter(move -> isLegalMove(piece.getPosition(), move, false))
+				.toList();
 	}
 
 	/**
@@ -62,6 +74,8 @@ public class ChessBoard
 	 */
 	public boolean isLegalMove(@NotNull String fromTile, @NotNull String toTile)
 	{
+		if (gameOver) return false;
+
 		Point fromPoint = ChessPositionConverter.convertTileToPoint(fromTile);
 		Point toPoint = ChessPositionConverter.convertTileToPoint(toTile);
 
@@ -73,9 +87,9 @@ public class ChessBoard
 		boolean isLegal = isLegalMove(fromPoint, toPoint);
 		if (isLegal)
 		{
-			// If the move is allowed, update our gameBoard
 			makeMove(fromPoint, toPoint);
 			swapTurn();
+			checkUtility.detectCheckMate().ifPresent(this::handleCheckMate);
 		}
 
 		logger.info(String.format("Move checked. Legal: %b, current turn: %s", isLegal, currentTurn));
@@ -121,6 +135,12 @@ public class ChessBoard
 		BoardUtility.updatePiecePosition(move.getTo(), gameBoard);
 	}
 
+	private void handleCheckMate(Color checkMated)
+	{
+		this.checkMated = checkMated;
+		this.gameOver = true;
+	}
+
 	/**
 	 * Checks that the piece to be moved belongs to the player whose turn it currently is.
 	 *
@@ -140,7 +160,8 @@ public class ChessBoard
 
 	/**
 	 * Updates the gameboard by performing the specified move. Also logs the
-	 * updated gameboard to the console.
+	 * updated gameboard to the console and updates the piece's positions.
+	 * Changes to the gameBoard should only be done through this method.
 	 *
 	 * @param from The position of the piece to be moved
 	 * @param to   The position where the piece should be moved to
@@ -215,4 +236,10 @@ public class ChessBoard
 	{
 		return currentTurn;
 	}
+
+	public Color getCheckMated()
+	{
+		return checkMated;
+	}
+
 }

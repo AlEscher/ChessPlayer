@@ -1,5 +1,7 @@
 package com.alescher.chessplayerserver.controller;
 
+import com.alescher.chessplayerserver.model.ChessBoard;
+import com.alescher.chessplayerserver.model.Color;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -14,13 +16,14 @@ public class MoveResponseEntity
 	private String toTile;
 	private String pieceID;
 	private boolean legal;
+	private Color checkMated;
 	private List<String> possibleMoves = new ArrayList<>();
 
 	@Override
 	public String toString()
 	{
-		return String.format("{ fromTile: %s, toTile: %s, pieceID: %s, legal: %b, possibleMoves: %s }",
-				fromTile, toTile, pieceID, legal, possibleMoves.toString());
+		return String.format("{ fromTile: %s, toTile: %s, pieceID: %s, legal: %b, possibleMoves: %s, checkMated: %s }",
+				fromTile, toTile, pieceID, legal, possibleMoves.toString(), checkMated);
 	}
 
 	public String getFromTile()
@@ -48,12 +51,18 @@ public class MoveResponseEntity
 		return possibleMoves;
 	}
 
-	public MoveResponseEntity(String fromTile, String toTile, String pieceID, boolean legal, @Nullable List<String> possibleMoves)
+	public Color getCheckMated()
+	{
+		return checkMated;
+	}
+
+	public MoveResponseEntity(String fromTile, String toTile, String pieceID, boolean legal, @Nullable List<String> possibleMoves, Color checkMated)
 	{
 		this.fromTile = fromTile;
 		this.toTile = toTile;
 		this.pieceID = pieceID;
 		this.legal = legal;
+		this.checkMated = checkMated;
 		if (possibleMoves != null)
 			this.possibleMoves = possibleMoves;
 	}
@@ -65,10 +74,10 @@ public class MoveResponseEntity
 	 * @param possibleMoves A list of possible moves
 	 * @return The response entity
 	 */
-	public static MoveResponseEntity create(MoveRequestEntity requestEntity, boolean legal, @Nullable List<String> possibleMoves)
+	public static MoveResponseEntity create(MoveRequestEntity requestEntity, boolean legal, @Nullable List<String> possibleMoves, ChessBoard board)
 	{
 		return new MoveResponseEntity(requestEntity.getFromTile(), requestEntity.getToTile(),
-				requestEntity.getPieceID(), legal, possibleMoves);
+				requestEntity.getPieceID(), legal, possibleMoves, board.getCheckMated());
 	}
 
 	/**
@@ -78,8 +87,8 @@ public class MoveResponseEntity
 	 * @param possibleMoves A list of possible moves that the piece can make
 	 * @return The response entity
 	 */
-	public static MoveResponseEntity create(String fromTile, String pieceID, List<String> possibleMoves)
+	public static MoveResponseEntity create(String fromTile, String pieceID, List<String> possibleMoves, ChessBoard board)
 	{
-		return new MoveResponseEntity(fromTile, null, pieceID, true, possibleMoves);
+		return new MoveResponseEntity(fromTile, null, pieceID, true, possibleMoves, board.getCheckMated());
 	}
 }

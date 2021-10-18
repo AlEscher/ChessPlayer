@@ -16,6 +16,7 @@ import java.util.Optional;
  */
 public class CheckUtility
 {
+	private final ChessBoard chessBoard;
 	private final ChessPiece[][] gameBoard;
 	private final King whiteKing;
 	private final King blackKing;
@@ -23,7 +24,7 @@ public class CheckUtility
 	private List<ChessPiece> blackAttackers;
 	private static final Logger logger = LoggerFactory.getLogger(CheckUtility.class);
 
-	public CheckUtility(ChessPiece[][] gameBoard, ChessPiece king1, ChessPiece king2)
+	public CheckUtility(ChessBoard chessBoard, ChessPiece[][] gameBoard, ChessPiece king1, ChessPiece king2)
 	{
 		if (king1.getColor() == Color.WHITE)
 		{
@@ -35,6 +36,7 @@ public class CheckUtility
 			this.blackKing = (King)king1;
 			this.whiteKing = (King)king2;
 		}
+		this.chessBoard = chessBoard;
 		this.gameBoard = gameBoard;
 		this.whiteAttackers = new ArrayList<>();
 		this.blackAttackers = new ArrayList<>();
@@ -105,6 +107,18 @@ public class CheckUtility
 	public boolean isBlackChecked()
 	{
 		return this.whiteAttackers.size() > 0;
+	}
+
+	public Optional<Color> detectCheckMate()
+	{
+		if (!isWhiteChecked() && !isBlackChecked()) return Optional.empty();
+
+		Color color = isWhiteChecked() ? Color.WHITE : Color.BLACK;
+		// Check if any piece of this color can still make a move
+		boolean canMove = BoardUtility.getAllPieces(gameBoard)
+				.anyMatch(chessPiece -> chessPiece != null && chessPiece.getColor() == color && !chessBoard.getLegalMoves(chessPiece).isEmpty());
+
+		return canMove ? Optional.empty() : Optional.of(color);
 	}
 
 	/**

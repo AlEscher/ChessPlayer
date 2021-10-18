@@ -77,14 +77,17 @@ export function handleDrop(e) {
         toTile: targetObj.id,
         pieceID: e.dataTransfer.getData("pieceID"),
     };
-    $.ajax({
-        url: "make-move",
-        type: "PUT",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        data: JSON.stringify(data),
-        success: movePiece,
-    });
+    if (data.fromTile !== data.toTile) {
+        $.ajax({
+            url: "make-move",
+            type: "PUT",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(data),
+            success: movePiece,
+        });
+    }
+
     // Reset the border of the tile we were dropping the piece into
     targetObj.style.border = "";
     // Reset the move previews

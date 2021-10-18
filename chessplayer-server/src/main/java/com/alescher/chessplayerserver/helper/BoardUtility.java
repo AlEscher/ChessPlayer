@@ -4,8 +4,10 @@ import com.alescher.chessplayerserver.model.ChessPiece;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Utility functions for checking things on our chessboard
@@ -180,5 +182,15 @@ public class BoardUtility
 		double length = Math.max(Math.abs(direction.x), Math.abs(direction.y));
 		direction.x /= length;
 		direction.y /= length;
+	}
+
+	/**
+	 * Returns a flattened version of the chessboard
+	 * @param gameBoard The chessboard
+	 * @return a <code>Stream</code> of every chess piece
+	 */
+	public static Stream<ChessPiece> getAllPieces(ChessPiece[][] gameBoard)
+	{
+		return Arrays.stream(gameBoard).flatMap(Arrays::stream);
 	}
 }
