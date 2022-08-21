@@ -27,5 +27,6 @@ module.exports = {
     "react/jsx-indent": 0,
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "no-use-before-define": ["error", { "functions": false, "classes": true, "variables": true }],
+    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
   },
 };

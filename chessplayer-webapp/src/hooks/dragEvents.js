@@ -1,6 +1,5 @@
 import { handleMoves, movePiece } from "../views/home";
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 const $ = require("jquery");
 
 /**

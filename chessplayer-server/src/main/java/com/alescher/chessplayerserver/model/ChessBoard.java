@@ -66,7 +66,20 @@ public class ChessBoard
 	}
 
 	/**
-	 * Checks whether a move can be performed on the chessboard
+	 * Performs a move on the Chessboard. Assumes that the moves was previously checked to be legal.
+	 * After the move is performed, it is checked whether the move resulted in a checkmate.
+	 * @param fromTile The starting tile
+	 * @param toTile The destination tile
+	 */
+	public void performMove(@NotNull String fromTile, @NotNull String toTile)
+	{
+		makeMove(ChessPositionConverter.convertTileToPoint(fromTile), ChessPositionConverter.convertTileToPoint(toTile));
+		swapTurn();
+		checkUtility.detectCheckMate().ifPresent(this::handleCheckMate);
+	}
+
+	/**
+	 * Checks whether a move can be performed on the chessboard.
 	 *
 	 * @param fromTile The tile a piece is being moved from, e.g. "A1", "B3", etc...
 	 * @param toTile   The tile a piece is being moved to, e.g. "A1", "B3", etc...
@@ -85,14 +98,8 @@ public class ChessBoard
 			return false;
 
 		boolean isLegal = isLegalMove(fromPoint, toPoint);
-		if (isLegal)
-		{
-			makeMove(fromPoint, toPoint);
-			swapTurn();
-			checkUtility.detectCheckMate().ifPresent(this::handleCheckMate);
-		}
 
-		logger.info(String.format("Move checked. Legal: %b, current turn: %s", isLegal, currentTurn));
+		logger.info(String.format("Move checked. Legal: %b", isLegal));
 		return isLegal;
 	}
 
@@ -101,6 +108,13 @@ public class ChessBoard
 		return isLegalMove(moveFrom, moveTo, true);
 	}
 
+	/**
+	 * Checks whether a move can be performed on the chessboard.
+	 * @param moveFrom The starting tile
+	 * @param moveTo The destination tile
+	 * @param keepState Whether to update the CheckUtility's state after checking this move
+	 * @return True if the move is allowed to be performed, false otherwise
+	 */
 	private boolean isLegalMove(Point moveFrom, Point moveTo, boolean keepState)
 	{
 		if (gameBoard[moveFrom.y][moveFrom.x] == null)

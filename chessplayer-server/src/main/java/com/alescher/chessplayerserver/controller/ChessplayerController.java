@@ -38,6 +38,10 @@ public class ChessplayerController
 		logger.info("Received request to make move: " + moveRequest);
 
 		boolean isLegal = board.isLegalMove(moveRequest.getFromTile(), moveRequest.getToTile());
+		if (isLegal)
+		{
+			board.performMove(moveRequest.getFromTile(), moveRequest.getToTile());
+		}
 		MoveResponseEntity moveResponse = MoveResponseEntity.create(moveRequest, isLegal, null, board);
 		logger.info("Sending move response: " + moveResponse);
 
@@ -53,7 +57,7 @@ public class ChessplayerController
 		// Get all legal moves and convert them to chess coordinates
 		List<String> possibleMoves = board.getLegalMoves(moveFrom)
 				.stream()
-				.map(p -> ChessPositionConverter.convertPointToTile(p))
+				.map(ChessPositionConverter::convertPointToTile)
 				.toList();
 
 		MoveResponseEntity moveResponse = MoveResponseEntity.create(fromTile, pieceID, possibleMoves, board);

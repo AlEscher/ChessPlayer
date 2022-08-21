@@ -38,15 +38,14 @@ public class BoardUtility
 				{
 					break;
 				}
-				// If we reach an enemy piece we have reached the last viable position in this direction
-				else if (gameBoard[p.y][p.x] != null && gameBoard[p.y][p.x].getColor() != piece.getColor())
-				{
-					possibleMoves.add(p);
-					break;
-				}
 				else
 				{
 					possibleMoves.add(p);
+					if (gameBoard[p.y][p.x] != null && gameBoard[p.y][p.x].getColor() != piece.getColor())
+					{
+						// If we reach an enemy piece we have reached the last viable position in this direction
+						break;
+					}
 				}
 			}
 		}
