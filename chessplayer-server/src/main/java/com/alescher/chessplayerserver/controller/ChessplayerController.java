@@ -8,34 +8,59 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.awt.Point;
+import java.awt.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 public class ChessplayerController
 {
-	private ChessBoard board;
+	private final Map<String, ChessBoard> games;
 
 	public static final Logger logger = LoggerFactory.getLogger(ChessplayerController.class);
 
 	public ChessplayerController()
 	{
-		this.board = new ChessBoard();
+		this.games = new HashMap<>();
 	}
 
+	/**
+	 * The first landing page when a user visits the app. Creates a new game ID and redirects the user to it.
+	 */
 	@GetMapping(path="/")
 	public ModelAndView index()
 	{
-		// TODO Send setup of gameBoard to webapp
-		logger.info("Setting up new ChessBoard");
-		this.board = new ChessBoard();
-		return new ModelAndView("index.html");
+		String gameID = UUID.randomUUID().toString();
+		logger.info("New game request, redirecting to {}", gameID);
+		return new ModelAndView(String.format("redirect:/game/%s/", gameID));
 	}
 
-	@PutMapping (path="/make-move", consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public MoveResponseEntity makeMove(@RequestBody MoveRequestEntity moveRequest)
+	/**
+	 * The page to get a specific game specified by its ID.
+	 * @param id The id of the game
+	 */
+	@GetMapping(path="/game/{id}/")
+	public ModelAndView gameIndex(@PathVariable String id)
 	{
-		logger.info("Received request to make move: " + moveRequest);
+		if (!this.games.containsKey(id))
+		{
+			logger.info("Setting up new ChessBoard for Game-ID: {}", id);
+			this.games.put(id, new ChessBoard());
+		}
+
+		ModelAndView view = new ModelAndView("index.html");
+		// TODO Send setup of gameBoard to webapp
+		view.addObject("gameFen", "test");
+		return view;
+	}
+
+	@PutMapping (path="/game/{id}/make-move", consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	public MoveResponseEntity makeMove(@RequestBody MoveRequestEntity moveRequest, @PathVariable String id)
+	{
+		logger.info("Received request to make move: {}", moveRequest);
+		ChessBoard board = this.games.get(id);
 
 		boolean isLegal = board.isLegalMove(moveRequest.getFromTile(), moveRequest.getToTile());
 		if (isLegal)
@@ -43,15 +68,16 @@ public class ChessplayerController
 			board.performMove(moveRequest.getFromTile(), moveRequest.getToTile());
 		}
 		MoveResponseEntity moveResponse = MoveResponseEntity.create(moveRequest, isLegal, null, board);
-		logger.info("Sending move response: " + moveResponse);
+		logger.info("Sending move response: {}", moveResponse);
 
 		return moveResponse;
 	}
 
-	@GetMapping(path="/get-moves", consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
-	public MoveResponseEntity getAllMoves(@RequestParam String fromTile, @RequestParam(required = false) String pieceID)
+	@GetMapping(path="/game/{id}/get-moves", consumes=MediaType.APPLICATION_JSON_VALUE, produces=MediaType.APPLICATION_JSON_VALUE)
+	public MoveResponseEntity getAllMoves(@RequestParam String fromTile, @RequestParam(required = false) String pieceID, @PathVariable String id)
 	{
-		logger.info(String.format("Received request to generate moves for %s on %s", pieceID, fromTile));
+		logger.info("Received request to generate moves for {} on {}", pieceID, fromTile);
+		ChessBoard board = this.games.get(id);
 
 		Point moveFrom = ChessPositionConverter.convertTileToPoint(fromTile);
 		// Get all legal moves and convert them to chess coordinates
@@ -61,7 +87,7 @@ public class ChessplayerController
 				.toList();
 
 		MoveResponseEntity moveResponse = MoveResponseEntity.create(fromTile, pieceID, possibleMoves, board);
-		logger.info("Sending response: " + moveResponse);
+		logger.info("Sending response: {}", moveResponse);
 
 		return moveResponse;
 	}
