@@ -19,7 +19,15 @@ import java.util.*;
  */
 public class ChessGame
 {
-	// TODO: Castling, Promoting, En passant, Stalemate
+	// TODO:
+	//  - Castling:
+	//      - Move rook (Frontend)
+	//      - Handle situation when rook / king moves without castling
+	//  - FEN support
+	//  - Tests
+	//  - Promoting
+	//  - Stalemate
+	//  - En passant
 	private final ChessPiece[][] gameBoard;
 	private final Stack<Move> pastMoves;
 	private final CheckUtility checkUtility;
@@ -37,6 +45,65 @@ public class ChessGame
 		this.pastMoves = new Stack<>();
 		this.checkUtility = new CheckUtility(this, gameBoard, gameBoard[0][4], gameBoard[7][4]);
 		this.currentTurn = Color.WHITE;
+	}
+
+	/**
+	 * Generate a FEN string that represents the current state of the game.
+	 * @return The FEN string
+	 * @see {@link <a href="https://www.chess.com/terms/fen-chess">FEN</a>}
+	 */
+	public String toFEN()
+	{
+		StringBuilder fen = new StringBuilder();
+		for (int i = 0; i < 8; i++)
+		{
+			int emptyTiles = 0;
+			for (int j = 0; j < 8; j++)
+			{
+				ChessPiece piece = getPiece(j, i);
+				if (piece == null)
+				{
+					emptyTiles++;
+				} else {
+					if (emptyTiles != 0)
+					{
+						fen.append(emptyTiles);
+					}
+					fen.append(piece);
+					emptyTiles = 0;
+				}
+			}
+			if (emptyTiles != 0)
+			{
+				fen.append(emptyTiles);
+			}
+			if (i < 7)
+			{
+				fen.append('/');
+			}
+		}
+		fen.append(' ');
+		fen.append(currentTurn == Color.WHITE ? 'w' : 'b');
+		fen.append(' ');
+		if (whiteKing.getPossibleCastles().contains(Castle.KINGSIDE))
+			fen.append('K');
+		if (whiteKing.getPossibleCastles().contains(Castle.QUEENSIDE))
+			fen.append('Q');
+		if (blackKing.getPossibleCastles().contains(Castle.KINGSIDE))
+			fen.append('k');
+		if (blackKing.getPossibleCastles().contains(Castle.QUEENSIDE))
+			fen.append('q');
+		fen.append(' ');
+		// En passant not implemented yet
+		fen.append('-');
+		fen.append(' ');
+		// Halfmove clock not implemented yet
+		fen.append('-');
+		fen.append(' ');
+		// Fullmoves
+		fen.append(1 + pastMoves.stream().filter(move -> move.getMoveColor() == Color.BLACK).count());
+
+		return fen.toString();
 	}
 
 	/**
@@ -74,7 +141,10 @@ public class ChessGame
 	 */
 	public void performMove(@NotNull String fromTile, @NotNull String toTile)
 	{
-		simulateMove(ChessPositionConverter.convertTileToPoint(fromTile), ChessPositionConverter.convertTileToPoint(toTile));
+		Point from = ChessPositionConverter.convertTileToPoint(fromTile);
+		Point to = ChessPositionConverter.convertTileToPoint(toTile);
+		handleCastle(from, to);
+		simulateMove(from, to);
 		swapTurn();
 		checkUtility.detectCheckMate().ifPresent(this::handleCheckMate);
 	}
@@ -182,7 +252,7 @@ public class ChessGame
 	public void simulateMove(Point from, Point to, boolean log)
 	{
 		// TODO: Handle capture (points update, etc...)
-		pastMoves.push(new Move(from, to, gameBoard[to.y][to.x]));
+		pastMoves.push(new Move(from, to, gameBoard[to.y][to.x], currentTurn));
 
 		if (gameBoard[to.y][to.x] != null)
 			gameBoard[to.y][to.x].setPosition(null);
@@ -222,6 +292,54 @@ public class ChessGame
 		gameBoard[7][5] = new Bishop(Color.WHITE, new Point(5, 7), this);
 		gameBoard[7][6] = new Knight(Color.WHITE, new Point(6, 7), this);
 		gameBoard[7][7] = new Rook(Color.WHITE, new Point(7, 7), this);
+	}
+
+	/** Get a piece from the chessboard. Assumes that the point is within bounds. */
+	private ChessPiece getPiece(@NotNull Point point)
+	{
+		return getPiece(point.x, point.y);
+	}
+
+	/** Get a piece from the chessboard. Assumes that the point is within bounds. */
+	private ChessPiece getPiece(int x, int y)
+	{
+		// Y is our vertical coordinate (file) and x horizontal (rank)
+		return gameBoard[y][x];
+	}
+
+	/**
+	 * Check whether a move is a castle. If so, move the rook accordingly and update the castle status.
+	 * If a king or rook is moving, updates castling status accordingly.
+	 * Assumes that the move is legal.
+	 * @param from The point from where the piece is moving
+	 * @param to The point to which the piece is moving
+	 */
+	private void handleCastle(Point from, Point to)
+	{
+		ChessPiece piece = getPiece(from);
+		if (piece instanceof King king)
+		{
+			if (to.x - from.x == 2)
+			{
+				// Move the king side rook 2 to the left
+				simulateMove(new Point(from.x + 3, from.y), new Point(from.x + 1, from.y), false);
+			} else if (to.x - from.x == -2)
+			{
+				// Move the queen side rook 3 to the right
+				simulateMove(new Point(from.x - 4, from.y), new Point(from.x - 1, from.y), false);
+			}
+			// If the king has moved, castling is not possible anymore
+			king.removeCastleOption(Castle.KINGSIDE, Castle.QUEENSIDE);
+		} else if (piece instanceof Rook rook)
+		{
+			if (rook.getColor() == Color.WHITE)
+			{
+				whiteKing.removeCastleOption(rook.getSide());
+			} else
+			{
+				blackKing.removeCastleOption(rook.getSide());
+			}
+		}
 	}
 
 	@Override

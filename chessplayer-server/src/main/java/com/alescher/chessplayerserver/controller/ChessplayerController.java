@@ -51,8 +51,7 @@ public class ChessplayerController
 		}
 
 		ModelAndView view = new ModelAndView("index.html");
-		// TODO Send setup of gameBoard to webapp
-		view.addObject("gameFen", "test");
+		view.addObject("gameFen", this.games.get(id).toFEN());
 		return view;
 	}
 
@@ -90,5 +89,14 @@ public class ChessplayerController
 		logger.info("Sending response: {}", moveResponse);
 
 		return moveResponse;
+	}
+
+	@GetMapping(path="/game/{id}/get-fen")
+	public String getFenCode(@PathVariable String id)
+	{
+		logger.info("Received request to generate FEN for {}", id);
+		String fenString = this.games.get(id).toFEN();
+		logger.info("Sending response: {}", fenString);
+		return fenString;
 	}
 }
