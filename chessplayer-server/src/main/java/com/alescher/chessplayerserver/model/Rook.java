@@ -17,7 +17,7 @@ public class Rook extends ChessPiece
 	{
 		if (!BoardUtility.isHorizontalOrVertical(position, moveTo))
 			return false;
-		if (!BoardUtility.checkPathUnobstructed(position, moveTo, getGameBoard()))
+		if (!checkPathUnobstructed(position, moveTo))
 			return false;
 
 		return true;
@@ -31,7 +31,7 @@ public class Rook extends ChessPiece
 				new Point(0, 1), new Point(0, -1), new Point(-1, 0), new Point(1, 0)
 		);
 
-		return BoardUtility.generatePossibleMoves(position, directions, this, getGameBoard());
+		return generatePossibleMoves(directions);
 	}
 
 	@Override

@@ -17,7 +17,7 @@ public class Bishop extends ChessPiece
 	{
 		if (!BoardUtility.isDiagonal(position, moveTo))
 			return false;
-		if (!BoardUtility.checkPathUnobstructed(position, moveTo, getGameBoard()))
+		if (!checkPathUnobstructed(position, moveTo))
 			return false;
 
 		return true;
@@ -31,7 +31,7 @@ public class Bishop extends ChessPiece
 				new Point(1, 1), new Point(1, -1), new Point(-1, 1), new Point(-1, -1)
 		);
 
-		return BoardUtility.generatePossibleMoves(position, directions, this, getGameBoard());
+		return generatePossibleMoves(directions);
 	}
 
 	@Override

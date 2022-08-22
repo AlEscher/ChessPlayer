@@ -41,7 +41,7 @@ public class King extends ChessPiece
 		possibleMoves.add(new Point(position.x + 1, position.y));
 		//possibleMoves.addAll(checkCastle());
 
-		BoardUtility.removeImpossibleMoves(possibleMoves, this, position, getGameBoard());
+		removeImpossibleMoves(possibleMoves);
 		return possibleMoves;
 	}
 
@@ -59,7 +59,7 @@ public class King extends ChessPiece
 		if (possibleCastles.contains(Castle.KINGSIDE) && isPathSafe(new Point(1, 0)))
 		{
 			Point castleDestination = new Point(position.x + 2, position.y);
-			if (BoardUtility.checkPathUnobstructed(position, castleDestination, getGameBoard()))
+			if (checkPathUnobstructed(position, castleDestination))
 			{
 				possibleMoves.add(castleDestination);
 			}
@@ -67,7 +67,7 @@ public class King extends ChessPiece
 		if (possibleCastles.contains(Castle.QUEENSIDE) && isPathSafe(new Point(-1, 0)))
 		{
 			Point castleDestination = new Point(position.x - 2, position.y);
-			if (BoardUtility.checkPathUnobstructed(position, castleDestination, getGameBoard()))
+			if (checkPathUnobstructed(position, castleDestination))
 			{
 				possibleMoves.add(castleDestination);
 			}

@@ -14,7 +14,7 @@ import java.util.List;
 public class Pawn extends ChessPiece
 {
 	private boolean didMove = false;
-	private Direction direction;
+	private final Direction direction;
 
 	public Pawn(Color color, Direction direction, Point position, ChessGame game)
 	{
@@ -63,7 +63,7 @@ public class Pawn extends ChessPiece
 		possibleMoves.add(new Point(position.x + 1, position.y + direction));
 		possibleMoves.add(new Point(position.x - 1, position.y + direction));
 
-		BoardUtility.removeImpossibleMoves(possibleMoves, this, position, getGameBoard());
+		removeImpossibleMoves(possibleMoves);
  		return possibleMoves;
 	}
 
@@ -79,7 +79,7 @@ public class Pawn extends ChessPiece
 		if (gameBoard[to.y][to.x] != null) // Cannot capture when moving forward
 			return false;
 
-		return true; // Legal move forward
+		return true; // Allowed move forward
 	}
 
 	// Checks whether the pawn can capture a piece, considering the direction he is facing
@@ -90,7 +90,7 @@ public class Pawn extends ChessPiece
 		if (gameBoard[to.y][to.x] == null) // We cannot capture on an empty tile
 			return false;
 
-		return true; // Legal capture
+		return true; // Allowed capture
 	}
 
 	// Check if this pawn has moved before

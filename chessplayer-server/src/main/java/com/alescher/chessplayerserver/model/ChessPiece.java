@@ -1,5 +1,6 @@
 package com.alescher.chessplayerserver.model;
 
+import com.alescher.chessplayerserver.helper.BoardUtility;
 import com.alescher.chessplayerserver.helper.CheckUtility;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -99,5 +100,20 @@ public abstract class ChessPiece
 	protected CheckUtility getCheckUtility()
 	{
 		return game.getCheckUtility();
+	}
+
+	protected boolean checkPathUnobstructed(Point from, Point to)
+	{
+		return BoardUtility.checkPathUnobstructed(from, to, getGameBoard());
+	}
+
+	protected List<Point> generatePossibleMoves(List<Point> directions)
+	{
+		return BoardUtility.generatePossibleMoves(position, directions, this, getGameBoard());
+	}
+
+	protected void removeImpossibleMoves(List<Point> possibleMoves)
+	{
+		BoardUtility.removeImpossibleMoves(possibleMoves, this, position, getGameBoard());
 	}
 }

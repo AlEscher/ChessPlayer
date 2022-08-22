@@ -130,9 +130,7 @@ public class ChessGame
 			return false;
 
 
-		boolean isLegal = checkUtility.isMoveLegal(moveFrom, moveTo, keepState);
-
-		return isLegal;
+		return checkUtility.isMoveLegal(moveFrom, moveTo, keepState);
 	}
 
 	/**
