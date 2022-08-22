@@ -8,6 +8,7 @@ import org.springframework.util.Assert;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -88,8 +89,8 @@ public class CheckUtility
 	{
 		logger.info(String.format("Updating CheckUtility state. Current: %s", this));
 		// Check if a piece attacks a king of the opposite color
-		BoardUtility.getAllPieces(gameBoard).forEach(chessPiece -> {
-			if (chessPiece != null)
+		BoardUtility.getAllPieces(gameBoard).filter(Objects::nonNull).forEach(chessPiece -> {
+			if (!chessPiece.getClass().equals(King.class))
 			{
 				chessPiece.getPossibleMoves().forEach(point -> this.checkAttacksKing(chessPiece.getPosition(), point));
 			}

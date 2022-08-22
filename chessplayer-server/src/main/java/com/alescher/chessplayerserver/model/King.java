@@ -20,6 +20,10 @@ public class King extends ChessPiece
 	@Override
 	public boolean checkMove(Point moveTo)
 	{
+		if (moveTo.x - position.x == 2 && possibleCastles.contains(Castle.KINGSIDE))
+			return true;
+		if (moveTo.x - position.x == -2 && possibleCastles.contains(Castle.QUEENSIDE))
+			return true;
 		if (Math.abs(position.x - moveTo.x) > 1 || Math.abs(position.y - moveTo.y) > 1)
 			return false;
 
@@ -39,7 +43,7 @@ public class King extends ChessPiece
 		possibleMoves.add(new Point(position.x, position.y + 1));
 		possibleMoves.add(new Point(position.x - 1, position.y));
 		possibleMoves.add(new Point(position.x + 1, position.y));
-		//possibleMoves.addAll(checkCastle());
+		possibleMoves.addAll(checkCastle());
 
 		removeImpossibleMoves(possibleMoves);
 		return possibleMoves;
