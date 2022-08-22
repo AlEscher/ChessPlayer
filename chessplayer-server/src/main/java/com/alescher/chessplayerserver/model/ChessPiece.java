@@ -1,5 +1,6 @@
 package com.alescher.chessplayerserver.model;
 
+import com.alescher.chessplayerserver.helper.CheckUtility;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,13 +20,13 @@ public abstract class ChessPiece
 	/** The current position of the chess piece */
 	protected Point position;
 	protected Color color;
-	protected final ChessPiece[][] gameBoard;
+	protected final ChessGame game;
 
-	public ChessPiece(Color color, Point position, ChessPiece[][] gameBoard)
+	public ChessPiece(Color color, Point position, ChessGame game)
 	{
 		this.color = color;
 		this.position = position;
-		this.gameBoard = gameBoard;
+		this.game = game;
 	}
 
 	@Override
@@ -64,12 +65,6 @@ public abstract class ChessPiece
 		return calculatePossibleMoves();
 	}
 
-	protected abstract List<Point> calculatePossibleMoves();
-
-	protected abstract boolean checkMove(Point to);
-
-	public abstract int getValue();
-
 	public Color getColor()
 	{
 		return color;
@@ -81,6 +76,8 @@ public abstract class ChessPiece
 		return position;
 	}
 
+	public abstract int getValue();
+
 	/**
 	 * Update the piece's position
 	 * @param position The new position, <code>null</code> if this piece was captured
@@ -88,5 +85,19 @@ public abstract class ChessPiece
 	public void setPosition(@Nullable Point position)
 	{
 		this.position = position;
+	}
+
+	protected abstract List<Point> calculatePossibleMoves();
+
+	protected abstract boolean checkMove(Point to);
+
+	protected ChessPiece[][] getGameBoard()
+	{
+		return game.getGameBoard();
+	}
+
+	protected CheckUtility getCheckUtility()
+	{
+		return game.getCheckUtility();
 	}
 }

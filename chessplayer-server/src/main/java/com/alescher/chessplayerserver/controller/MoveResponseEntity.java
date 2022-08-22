@@ -1,6 +1,6 @@
 package com.alescher.chessplayerserver.controller;
 
-import com.alescher.chessplayerserver.model.ChessBoard;
+import com.alescher.chessplayerserver.model.ChessGame;
 import com.alescher.chessplayerserver.model.Color;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,7 +74,7 @@ public class MoveResponseEntity
 	 * @param possibleMoves A list of possible moves
 	 * @return The response entity
 	 */
-	public static MoveResponseEntity create(MoveRequestEntity requestEntity, boolean legal, @Nullable List<String> possibleMoves, ChessBoard board)
+	public static MoveResponseEntity create(MoveRequestEntity requestEntity, boolean legal, @Nullable List<String> possibleMoves, ChessGame board)
 	{
 		return new MoveResponseEntity(requestEntity.getFromTile(), requestEntity.getToTile(),
 				requestEntity.getPieceID(), legal, possibleMoves, board.getCheckMated());
@@ -87,7 +87,7 @@ public class MoveResponseEntity
 	 * @param possibleMoves A list of possible moves that the piece can make
 	 * @return The response entity
 	 */
-	public static MoveResponseEntity create(String fromTile, String pieceID, List<String> possibleMoves, ChessBoard board)
+	public static MoveResponseEntity create(String fromTile, String pieceID, List<String> possibleMoves, ChessGame board)
 	{
 		return new MoveResponseEntity(fromTile, null, pieceID, true, possibleMoves, board.getCheckMated());
 	}

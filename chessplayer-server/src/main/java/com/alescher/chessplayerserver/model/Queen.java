@@ -7,9 +7,9 @@ import java.util.List;
 
 public class Queen extends ChessPiece
 {
-	public Queen(Color color, Point position, ChessPiece[][] gameBoard)
+	public Queen(Color color, Point position, ChessGame game)
 	{
-		super(color, position, gameBoard);
+		super(color, position, game);
 	}
 
 	@Override
@@ -17,7 +17,7 @@ public class Queen extends ChessPiece
 	{
 		if (!BoardUtility.isDiagonal(position, moveTo) && !BoardUtility.isHorizontalOrVertical(position, moveTo))
 			return false;
-		if (!BoardUtility.checkPathUnobstructed(position, moveTo, gameBoard))
+		if (!BoardUtility.checkPathUnobstructed(position, moveTo, getGameBoard()))
 			return false;
 
 		return true;
@@ -32,7 +32,7 @@ public class Queen extends ChessPiece
 				new Point(0, 1), new Point(0, -1), new Point(-1, 0), new Point(1, 0)
 		);
 
-		return BoardUtility.generatePossibleMoves(position, directions, this, gameBoard);
+		return BoardUtility.generatePossibleMoves(position, directions, this, getGameBoard());
 	}
 
 	@Override

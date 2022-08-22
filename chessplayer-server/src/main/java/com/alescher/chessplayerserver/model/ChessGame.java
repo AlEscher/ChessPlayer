@@ -10,26 +10,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Represents the chessboard and its current state
  *
  * @author AlEscher
  */
-public class ChessBoard
+public class ChessGame
 {
+	// TODO: Castling, Promoting, En passant, Stalemate
 	private final ChessPiece[][] gameBoard;
 	private final Stack<Move> pastMoves;
 	private final CheckUtility checkUtility;
 	private Color currentTurn;
 	private Color checkMated = null;
 	private boolean gameOver = false;
-	private static final Logger logger = LoggerFactory.getLogger(ChessBoard.class);
+	private King whiteKing;
+	private King blackKing;
+	private static final Logger logger = LoggerFactory.getLogger(ChessGame.class);
 
-	public ChessBoard()
+	public ChessGame()
 	{
 		this.gameBoard = new ChessPiece[8][8];
 		setupBoard();
@@ -73,7 +74,7 @@ public class ChessBoard
 	 */
 	public void performMove(@NotNull String fromTile, @NotNull String toTile)
 	{
-		makeMove(ChessPositionConverter.convertTileToPoint(fromTile), ChessPositionConverter.convertTileToPoint(toTile));
+		simulateMove(ChessPositionConverter.convertTileToPoint(fromTile), ChessPositionConverter.convertTileToPoint(toTile));
 		swapTurn();
 		checkUtility.detectCheckMate().ifPresent(this::handleCheckMate);
 	}
@@ -128,10 +129,8 @@ public class ChessBoard
 		if (!gameBoard[moveFrom.y][moveFrom.x].isPossibleMove(moveTo))
 			return false;
 
-		// Simulate the move to see if any player's king is checked
-		makeMove(moveFrom, moveTo, false);
+
 		boolean isLegal = checkUtility.isMoveLegal(moveFrom, moveTo, keepState);
-		undoMove();
 
 		return isLegal;
 	}
@@ -140,7 +139,7 @@ public class ChessBoard
 	 * Undoes the last move that was performed.
 	 * Removes the undone move and sets the currentTurn back to the previous value
 	 */
-	private void undoMove()
+	public void undoMove()
 	{
 		Move move = pastMoves.pop();
 		gameBoard[move.getFrom().y][move.getFrom().x] = gameBoard[move.getTo().y][move.getTo().x];
@@ -175,13 +174,14 @@ public class ChessBoard
 	/**
 	 * Updates the gameboard by performing the specified move. Also logs the
 	 * updated gameboard to the console and updates the piece's positions.
-	 * Changes to the gameBoard should only be done through this method.
+	 * The simulated move can be undone by calling undoMove
 	 *
 	 * @param from The position of the piece to be moved
 	 * @param to   The position where the piece should be moved to
 	 * @param log  If true, the updated chessboard will be logged to the console
+	 * @see ChessGame#undoMove() undoMove
 	 */
-	private void makeMove(Point from, Point to, boolean log)
+	public void simulateMove(Point from, Point to, boolean log)
 	{
 		// TODO: Handle capture (points update, etc...)
 		pastMoves.push(new Move(from, to, gameBoard[to.y][to.x]));
@@ -195,35 +195,35 @@ public class ChessBoard
 		if (log) logger.info(String.valueOf(this));
 	}
 
-	private void makeMove(Point from, Point to)
+	private void simulateMove(Point from, Point to)
 	{
-		makeMove(from, to, true);
+		simulateMove(from, to, true);
 	}
 
 	private void setupBoard()
 	{
 		for (int i = 0; i < 8; i++)
 		{
-			gameBoard[6][i] = new Pawn(Color.WHITE, Pawn.Direction.UP, new Point(i, 6), gameBoard);
-			gameBoard[1][i] = new Pawn(Color.BLACK, Pawn.Direction.DOWN, new Point(i, 1), gameBoard);
+			gameBoard[6][i] = new Pawn(Color.WHITE, Pawn.Direction.UP, new Point(i, 6), this);
+			gameBoard[1][i] = new Pawn(Color.BLACK, Pawn.Direction.DOWN, new Point(i, 1), this);
 		}
-		gameBoard[0][0] = new Rook(Color.BLACK, new Point(0, 0), gameBoard);
-		gameBoard[0][1] = new Knight(Color.BLACK, new Point(1, 0), gameBoard);
-		gameBoard[0][2] = new Bishop(Color.BLACK, new Point(2, 0), gameBoard);
-		gameBoard[0][3] = new Queen(Color.BLACK, new Point(3, 0), gameBoard);
-		gameBoard[0][4] = new King(Color.BLACK, new Point(4, 0), gameBoard);
-		gameBoard[0][5] = new Bishop(Color.BLACK, new Point(5, 0), gameBoard);
-		gameBoard[0][6] = new Knight(Color.BLACK, new Point(6, 0), gameBoard);
-		gameBoard[0][7] = new Rook(Color.BLACK, new Point(7, 0), gameBoard);
+		gameBoard[0][0] = new Rook(Color.BLACK, new Point(0, 0), this);
+		gameBoard[0][1] = new Knight(Color.BLACK, new Point(1, 0), this);
+		gameBoard[0][2] = new Bishop(Color.BLACK, new Point(2, 0), this);
+		gameBoard[0][3] = new Queen(Color.BLACK, new Point(3, 0), this);
+		gameBoard[0][4] = blackKing = new King(Color.BLACK, new Point(4, 0), this);
+		gameBoard[0][5] = new Bishop(Color.BLACK, new Point(5, 0), this);
+		gameBoard[0][6] = new Knight(Color.BLACK, new Point(6, 0), this);
+		gameBoard[0][7] = new Rook(Color.BLACK, new Point(7, 0), this);
 
-		gameBoard[7][0] = new Rook(Color.WHITE, new Point(0, 7), gameBoard);
-		gameBoard[7][1] = new Knight(Color.WHITE, new Point(1, 7), gameBoard);
-		gameBoard[7][2] = new Bishop(Color.WHITE, new Point(2, 7), gameBoard);
-		gameBoard[7][3] = new Queen(Color.WHITE, new Point(3, 7), gameBoard);
-		gameBoard[7][4] = new King(Color.WHITE, new Point(4, 7), gameBoard);
-		gameBoard[7][5] = new Bishop(Color.WHITE, new Point(5, 7), gameBoard);
-		gameBoard[7][6] = new Knight(Color.WHITE, new Point(6, 7), gameBoard);
-		gameBoard[7][7] = new Rook(Color.WHITE, new Point(7, 7), gameBoard);
+		gameBoard[7][0] = new Rook(Color.WHITE, new Point(0, 7), this);
+		gameBoard[7][1] = new Knight(Color.WHITE, new Point(1, 7), this);
+		gameBoard[7][2] = new Bishop(Color.WHITE, new Point(2, 7), this);
+		gameBoard[7][3] = new Queen(Color.WHITE, new Point(3, 7), this);
+		gameBoard[7][4] = whiteKing = new King(Color.WHITE, new Point(4, 7), this);
+		gameBoard[7][5] = new Bishop(Color.WHITE, new Point(5, 7), this);
+		gameBoard[7][6] = new Knight(Color.WHITE, new Point(6, 7), this);
+		gameBoard[7][7] = new Rook(Color.WHITE, new Point(7, 7), this);
 	}
 
 	@Override
@@ -254,6 +254,16 @@ public class ChessBoard
 	public Color getCheckMated()
 	{
 		return checkMated;
+	}
+
+	public ChessPiece[][] getGameBoard()
+	{
+		return gameBoard;
+	}
+
+	public CheckUtility getCheckUtility()
+	{
+		return checkUtility;
 	}
 
 }

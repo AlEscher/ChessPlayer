@@ -8,9 +8,9 @@ import java.util.List;
 
 public class Knight extends ChessPiece
 {
-	public Knight(Color color, Point position, ChessPiece[][] gameBoard)
+	public Knight(Color color, Point position, ChessGame game)
 	{
-		super(color, position, gameBoard);
+		super(color, position, game);
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class Knight extends ChessPiece
 		possibleMoves.add(new Point(position.x - 1, position.y + 2));
 		possibleMoves.add(new Point(position.x - 1, position.y - 2));
 
-		BoardUtility.removeImpossibleMoves(possibleMoves, this, position, gameBoard);
+		BoardUtility.removeImpossibleMoves(possibleMoves, this, position, getGameBoard());
 		return possibleMoves;
 	}
 

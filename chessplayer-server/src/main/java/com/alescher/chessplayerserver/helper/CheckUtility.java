@@ -16,7 +16,7 @@ import java.util.Optional;
  */
 public class CheckUtility
 {
-	private final ChessBoard chessBoard;
+	private final ChessGame chessGame;
 	private final ChessPiece[][] gameBoard;
 	private final King whiteKing;
 	private final King blackKing;
@@ -24,7 +24,7 @@ public class CheckUtility
 	private List<ChessPiece> blackAttackers;
 	private static final Logger logger = LoggerFactory.getLogger(CheckUtility.class);
 
-	public CheckUtility(ChessBoard chessBoard, ChessPiece[][] gameBoard, ChessPiece king1, ChessPiece king2)
+	public CheckUtility(ChessGame chessGame, ChessPiece[][] gameBoard, ChessPiece king1, ChessPiece king2)
 	{
 		if (king1.getColor() == Color.WHITE)
 		{
@@ -36,7 +36,7 @@ public class CheckUtility
 			this.blackKing = (King)king1;
 			this.whiteKing = (King)king2;
 		}
-		this.chessBoard = chessBoard;
+		this.chessGame = chessGame;
 		this.gameBoard = gameBoard;
 		this.whiteAttackers = new ArrayList<>();
 		this.blackAttackers = new ArrayList<>();
@@ -52,45 +52,53 @@ public class CheckUtility
 	 */
 	public boolean isMoveLegal(Point from, Point to, boolean keepState)
 	{
+		// Simulate the move to see if any player's king is checked
+		chessGame.simulateMove(from, to, false);
 		Assert.state(!(gameBoard[to.y][to.x].getColor() == Color.WHITE && isBlackChecked()),
 				"A player should not be making a move if the enemies king was already under check");
 		Assert.state(!(gameBoard[to.y][to.x].getColor() == Color.BLACK && isWhiteChecked()),
 				"A player should not be making a move if the enemies king was already under check");
 
 		if (!checkPreviousAttackers())
+		{
+			chessGame.undoMove();
 			return false;
+		}
 
 		CheckState backup = new CheckState(whiteAttackers, blackAttackers);
 
 		whiteAttackers.clear();
 		blackAttackers.clear();
 		// No previous threats, update the state for the new simulated move
-		updateState(from, to);
+		updateState();
 		Color player = gameBoard[to.y][to.x].getColor();
 		boolean isLegal = (player == Color.WHITE) ? !isWhiteChecked() : !isBlackChecked();
 
 		if (!keepState || !isLegal) resetState(backup);
 
+		chessGame.undoMove();
 		return isLegal;
 	}
 
 	/**
-	 * Checks if any player is checked and updates <code>whiteAttackers</code> and <code>blackAttackers</code>
+	 * Checks if any player is checked after simulating a move and updates <code>whiteAttackers</code> and <code>blackAttackers</code>
 	 * accordingly.
-	 * @param from The tile the piece moved from
-	 * @param to The tile the piece is currently on
 	 */
-	public void updateState(Point from, Point to)
+	public void updateState()
 	{
 		logger.info(String.format("Updating CheckUtility state. Current: %s", this));
-		// Check if moved piece attacks any king
-		gameBoard[to.y][to.x].getPossibleMoves().forEach(point -> checkAttacksKing(to, point));
-		detectDiscoveryAttacks(from);
+		// Check if a piece attacks a king of the opposite color
+		BoardUtility.getAllPieces(gameBoard).forEach(chessPiece -> {
+			if (chessPiece != null)
+			{
+				chessPiece.getPossibleMoves().forEach(point -> this.checkAttacksKing(chessPiece.getPosition(), point));
+			}
+		});
 		logger.info(String.format("CheckUtility updated: %s", this));
 	}
 
 	/**
-	 * If any changes have been manually made to the board, {@link CheckUtility#updateState(Point, Point)}
+	 * If any changes have been manually made to the board, {@link CheckUtility#updateState()}
 	 * should be called before this method is invoked.
 	 * @return <code>true</code> if white is currently checked
 	 */
@@ -100,7 +108,7 @@ public class CheckUtility
 	}
 
 	/**
-	 * If any changes have been manually made to the board, {@link CheckUtility#updateState(Point, Point)}
+	 * If any changes have been manually made to the board, {@link CheckUtility#updateState()}
 	 * should be called before this method is invoked.
 	 * @return <code>true</code> if black is currently checked
 	 */
@@ -116,7 +124,7 @@ public class CheckUtility
 		Color color = isWhiteChecked() ? Color.WHITE : Color.BLACK;
 		// Check if any piece of this color can still make a move
 		boolean canMove = BoardUtility.getAllPieces(gameBoard)
-				.anyMatch(chessPiece -> chessPiece != null && chessPiece.getColor() == color && !chessBoard.getLegalMoves(chessPiece).isEmpty());
+				.anyMatch(chessPiece -> chessPiece != null && chessPiece.getColor() == color && !chessGame.getLegalMoves(chessPiece).isEmpty());
 
 		return canMove ? Optional.empty() : Optional.of(color);
 	}
@@ -190,62 +198,6 @@ public class CheckUtility
 		logger.info(String.format("%d attackers remain", remainingAttackers.size()));
 
 		return remainingAttackers.isEmpty();
-	}
-
-	/**
-	 * Check if a discovery attack has occurred after this simulated move
-	 * @param from The position the piece was previously on
-	 */
-	private void detectDiscoveryAttacks(Point from)
-	{
-		checkHorizontalDiscovery(from, whiteKing);
-		checkHorizontalDiscovery(from, blackKing);
-		checkDiagonalDiscovery(from, whiteKing);
-		checkDiagonalDiscovery(from, blackKing);
-	}
-
-	/** Check for a horizontal or vertical discovery attack against the specified king */
-	private void checkHorizontalDiscovery(Point from, King king)
-	{
-		// Only Bishops, Rooks and Queens can be part of a discovery attack, so
-		// the now empty position and the king's position need to be on a line
-		if (BoardUtility.isHorizontalOrVertical(from, king.getPosition())
-				&& BoardUtility.checkPathUnobstructed(king.getPosition(), from, gameBoard))
-		{
-			checkDiscoveryAttack(from, king, List.of(Rook.class, Queen.class));
-		}
-	}
-
-	/** Check for a diagonal discovery attack against the specified king */
-	private void checkDiagonalDiscovery(Point from, King king)
-	{
-		// Only Bishops, Rooks and Queens can be part of a discovery attack, so
-		// the now empty position and the king's position need to be on a line
-		if (BoardUtility.isDiagonal(from, king.getPosition())
-				&& BoardUtility.checkPathUnobstructed(king.getPosition(), from, gameBoard))
-		{
-			checkDiscoveryAttack(from, king, List.of(Bishop.class, Queen.class));
-		}
-	}
-
-	/**
-	 * Checks a single line for a discovery attack against the specified king.
-	 * @param from The position were a piece just moved from
-	 * @param king The specified king
-	 */
-	private void checkDiscoveryAttack(Point from, King king, List<Class<?>> possibleAttackerClasses)
-	{
-		// We want to go in the opposite direction of the king, to check what was "behind" the piece that was just moved
-		Point direction = new Point(from.x - king.getPosition().x, from.y - king.getPosition().y);
-		BoardUtility.normalizeDirectionalVector(direction);
-		Optional<ChessPiece> firstPiece = BoardUtility.getFirstPieceInPath(from, direction, gameBoard);
-		firstPiece.ifPresent(chessPiece ->
-		{
-			if (possibleAttackerClasses.contains(chessPiece.getClass()) && chessPiece.getColor() != king.getColor())
-			{
-				handleCheck(chessPiece, king);
-			}
-		});
 	}
 
 	/** Reset this objects internal state to a previously saved one */

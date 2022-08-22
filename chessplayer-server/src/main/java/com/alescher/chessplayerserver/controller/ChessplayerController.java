@@ -1,7 +1,7 @@
 package com.alescher.chessplayerserver.controller;
 
 import com.alescher.chessplayerserver.helper.ChessPositionConverter;
-import com.alescher.chessplayerserver.model.ChessBoard;
+import com.alescher.chessplayerserver.model.ChessGame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -17,7 +17,7 @@ import java.util.UUID;
 @RestController
 public class ChessplayerController
 {
-	private final Map<String, ChessBoard> games;
+	private final Map<String, ChessGame> games;
 
 	public static final Logger logger = LoggerFactory.getLogger(ChessplayerController.class);
 
@@ -47,7 +47,7 @@ public class ChessplayerController
 		if (!this.games.containsKey(id))
 		{
 			logger.info("Setting up new ChessBoard for Game-ID: {}", id);
-			this.games.put(id, new ChessBoard());
+			this.games.put(id, new ChessGame());
 		}
 
 		ModelAndView view = new ModelAndView("index.html");
@@ -60,7 +60,7 @@ public class ChessplayerController
 	public MoveResponseEntity makeMove(@RequestBody MoveRequestEntity moveRequest, @PathVariable String id)
 	{
 		logger.info("Received request to make move: {}", moveRequest);
-		ChessBoard board = this.games.get(id);
+		ChessGame board = this.games.get(id);
 
 		boolean isLegal = board.isLegalMove(moveRequest.getFromTile(), moveRequest.getToTile());
 		if (isLegal)
@@ -77,7 +77,7 @@ public class ChessplayerController
 	public MoveResponseEntity getAllMoves(@RequestParam String fromTile, @RequestParam(required = false) String pieceID, @PathVariable String id)
 	{
 		logger.info("Received request to generate moves for {} on {}", pieceID, fromTile);
-		ChessBoard board = this.games.get(id);
+		ChessGame board = this.games.get(id);
 
 		Point moveFrom = ChessPositionConverter.convertTileToPoint(fromTile);
 		// Get all legal moves and convert them to chess coordinates

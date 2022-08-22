@@ -16,9 +16,9 @@ public class Pawn extends ChessPiece
 	private boolean didMove = false;
 	private Direction direction;
 
-	public Pawn(Color color, Direction direction, Point position, ChessPiece[][] gameBoard)
+	public Pawn(Color color, Direction direction, Point position, ChessGame game)
 	{
-		super(color, position, gameBoard);
+		super(color, position, game);
 		this.direction = direction;
 	}
 
@@ -42,11 +42,11 @@ public class Pawn extends ChessPiece
 
 		if (position.x == moveTo.x) // Pawn is moving forward
 		{
-			return checkMoveForward(position, moveTo, gameBoard);
+			return checkMoveForward(position, moveTo, getGameBoard());
 		}
 		else if (Math.abs(position.x - moveTo.x) == 1) // Pawn is capturing
 		{
-			return checkCapture(position, moveTo, gameBoard);
+			return checkCapture(position, moveTo, getGameBoard());
 		}
 
 		return false;
@@ -63,7 +63,7 @@ public class Pawn extends ChessPiece
 		possibleMoves.add(new Point(position.x + 1, position.y + direction));
 		possibleMoves.add(new Point(position.x - 1, position.y + direction));
 
-		BoardUtility.removeImpossibleMoves(possibleMoves, this, position, gameBoard);
+		BoardUtility.removeImpossibleMoves(possibleMoves, this, position, getGameBoard());
  		return possibleMoves;
 	}
 

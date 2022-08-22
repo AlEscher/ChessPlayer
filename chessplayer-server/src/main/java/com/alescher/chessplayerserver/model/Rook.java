@@ -7,9 +7,9 @@ import java.util.List;
 
 public class Rook extends ChessPiece
 {
-	public Rook(Color color, Point position, ChessPiece[][] gameBoard)
+	public Rook(Color color, Point position, ChessGame game)
 	{
-		super(color, position, gameBoard);
+		super(color, position, game);
 	}
 
 	@Override
@@ -17,7 +17,7 @@ public class Rook extends ChessPiece
 	{
 		if (!BoardUtility.isHorizontalOrVertical(position, moveTo))
 			return false;
-		if (!BoardUtility.checkPathUnobstructed(position, moveTo, gameBoard))
+		if (!BoardUtility.checkPathUnobstructed(position, moveTo, getGameBoard()))
 			return false;
 
 		return true;
@@ -31,7 +31,7 @@ public class Rook extends ChessPiece
 				new Point(0, 1), new Point(0, -1), new Point(-1, 0), new Point(1, 0)
 		);
 
-		return BoardUtility.generatePossibleMoves(position, directions, this, gameBoard);
+		return BoardUtility.generatePossibleMoves(position, directions, this, getGameBoard());
 	}
 
 	@Override
