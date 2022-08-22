@@ -15,9 +15,9 @@ public class Queen extends ChessPiece
 	@Override
 	public boolean checkMove(Point moveTo)
 	{
-		if (!BoardUtility.isDiagonal(position, moveTo) && !BoardUtility.isHorizontalOrVertical(position, moveTo))
+		if (!BoardUtility.isDiagonal(getPosition(), moveTo) && !BoardUtility.isHorizontalOrVertical(getPosition(), moveTo))
 			return false;
-		if (!checkPathUnobstructed(position, moveTo))
+		if (!checkPathUnobstructed(getPosition(), moveTo))
 			return false;
 
 		return true;
@@ -44,6 +44,6 @@ public class Queen extends ChessPiece
 	@Override
 	public String toString()
 	{
-		return "Q";
+		return getColor() == Color.WHITE ? "Q" : "q";
 	}
 }

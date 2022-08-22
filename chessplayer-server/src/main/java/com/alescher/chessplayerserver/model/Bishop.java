@@ -15,9 +15,9 @@ public class Bishop extends ChessPiece
 	@Override
 	public boolean checkMove(Point moveTo)
 	{
-		if (!BoardUtility.isDiagonal(position, moveTo))
+		if (!BoardUtility.isDiagonal(getPosition(), moveTo))
 			return false;
-		if (!checkPathUnobstructed(position, moveTo))
+		if (!checkPathUnobstructed(getPosition(), moveTo))
 			return false;
 
 		return true;
@@ -43,6 +43,6 @@ public class Bishop extends ChessPiece
 	@Override
 	public String toString()
 	{
-		return "B";
+		return getColor() == Color.WHITE ? "B" : "b";
 	}
 }

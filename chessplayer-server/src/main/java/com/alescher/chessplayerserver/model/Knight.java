@@ -1,8 +1,6 @@
 package com.alescher.chessplayerserver.model;
 
-import com.alescher.chessplayerserver.helper.BoardUtility;
-
-import java.awt.Point;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,9 +14,9 @@ public class Knight extends ChessPiece
 	@Override
 	public boolean checkMove(Point moveTo)
 	{
-		if (Math.abs(position.x - moveTo.x) == 2 && Math.abs(position.y - moveTo.y) == 1)
+		if (Math.abs(getPosition().x - moveTo.x) == 2 && Math.abs(getPosition().y - moveTo.y) == 1)
 			return true;
-		if (Math.abs(position.x - moveTo.x) == 1 && Math.abs(position.y - moveTo.y) == 2)
+		if (Math.abs(getPosition().x - moveTo.x) == 1 && Math.abs(getPosition().y - moveTo.y) == 2)
 			return true;
 
 		return false;
@@ -27,6 +25,7 @@ public class Knight extends ChessPiece
 	@Override
 	public List<Point> calculatePossibleMoves()
 	{
+		Point position = getPosition();
 		// All the moves a knight can generally make
 		List<Point> possibleMoves = new ArrayList<>();
 		possibleMoves.add(new Point(position.x + 2, position.y + 1));
@@ -51,6 +50,6 @@ public class Knight extends ChessPiece
 	@Override
 	public String toString()
 	{
-		return "N";
+		return getColor() == Color.WHITE ? "N" : "n";
 	}
 }

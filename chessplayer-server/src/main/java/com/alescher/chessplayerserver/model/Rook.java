@@ -7,17 +7,20 @@ import java.util.List;
 
 public class Rook extends ChessPiece
 {
+	// The side on which this rook is
+	private final Castle side;
 	public Rook(Color color, Point position, ChessGame game)
 	{
 		super(color, position, game);
+		side = getPosition().x == 0 ? Castle.QUEENSIDE : Castle.KINGSIDE;
 	}
 
 	@Override
 	public boolean checkMove(Point moveTo)
 	{
-		if (!BoardUtility.isHorizontalOrVertical(position, moveTo))
+		if (!BoardUtility.isHorizontalOrVertical(getPosition(), moveTo))
 			return false;
-		if (!checkPathUnobstructed(position, moveTo))
+		if (!checkPathUnobstructed(getPosition(), moveTo))
 			return false;
 
 		return true;
@@ -43,6 +46,11 @@ public class Rook extends ChessPiece
 	@Override
 	public String toString()
 	{
-		return "R";
+		return getColor() == Color.WHITE ? "R" : "r";
+	}
+
+	public Castle getSide()
+	{
+		return side;
 	}
 }

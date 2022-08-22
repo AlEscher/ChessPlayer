@@ -1,7 +1,5 @@
 package com.alescher.chessplayerserver.model;
 
-import com.alescher.chessplayerserver.helper.BoardUtility;
-
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,11 +18,11 @@ public class King extends ChessPiece
 	@Override
 	public boolean checkMove(Point moveTo)
 	{
-		if (moveTo.x - position.x == 2 && possibleCastles.contains(Castle.KINGSIDE))
+		if (moveTo.x - getPosition().x == 2 && possibleCastles.contains(Castle.KINGSIDE))
 			return true;
-		if (moveTo.x - position.x == -2 && possibleCastles.contains(Castle.QUEENSIDE))
+		if (moveTo.x - getPosition().x == -2 && possibleCastles.contains(Castle.QUEENSIDE))
 			return true;
-		if (Math.abs(position.x - moveTo.x) > 1 || Math.abs(position.y - moveTo.y) > 1)
+		if (Math.abs(getPosition().x - moveTo.x) > 1 || Math.abs(getPosition().y - moveTo.y) > 1)
 			return false;
 
 		return true;
@@ -33,6 +31,7 @@ public class King extends ChessPiece
 	@Override
 	public List<Point> calculatePossibleMoves()
 	{
+		Point position = getPosition();
 		// All the moves a king can generally make
 		List<Point> possibleMoves = new ArrayList<>();
 		possibleMoves.add(new Point(position.x - 1, position.y - 1));
@@ -62,16 +61,16 @@ public class King extends ChessPiece
 		}
 		if (possibleCastles.contains(Castle.KINGSIDE) && isPathSafe(new Point(1, 0)))
 		{
-			Point castleDestination = new Point(position.x + 2, position.y);
-			if (checkPathUnobstructed(position, castleDestination))
+			Point castleDestination = new Point(getPosition().x + 2, getPosition().y);
+			if (checkPathUnobstructed(getPosition(), castleDestination))
 			{
 				possibleMoves.add(castleDestination);
 			}
 		}
 		if (possibleCastles.contains(Castle.QUEENSIDE) && isPathSafe(new Point(-1, 0)))
 		{
-			Point castleDestination = new Point(position.x - 2, position.y);
-			if (checkPathUnobstructed(position, castleDestination))
+			Point castleDestination = new Point(getPosition().x - 2, getPosition().y);
+			if (checkPathUnobstructed(getPosition(), castleDestination))
 			{
 				possibleMoves.add(castleDestination);
 			}
@@ -86,8 +85,8 @@ public class King extends ChessPiece
 	 */
 	private boolean isPathSafe(Point direction)
 	{
-		List<Point> path = List.of(new Point(position.x + direction.x, position.y), new Point(position.x + direction.x * 2, position.y));
-		return path.stream().allMatch(point -> getCheckUtility().isMoveLegal(position, point, false));
+		List<Point> path = List.of(new Point(getPosition().x + direction.x, getPosition().y), new Point(getPosition().x + direction.x * 2, getPosition().y));
+		return path.stream().allMatch(point -> getCheckUtility().isMoveLegal(getPosition(), point, false));
 	}
 
 	@Override
@@ -99,7 +98,7 @@ public class King extends ChessPiece
 	@Override
 	public String toString()
 	{
-		return "K";
+		return getColor() == Color.WHITE ? "K" : "k";
 	}
 
 	public List<Castle> getPossibleCastles()
@@ -123,6 +122,6 @@ public class King extends ChessPiece
 	 */
 	public boolean isChecked()
 	{
-		return color == Color.WHITE ? getCheckUtility().isWhiteChecked() : getCheckUtility().isBlackChecked();
+		return getColor() == Color.WHITE ? getCheckUtility().isWhiteChecked() : getCheckUtility().isBlackChecked();
 	}
 }

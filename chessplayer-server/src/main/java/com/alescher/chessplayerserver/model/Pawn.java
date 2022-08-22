@@ -1,8 +1,6 @@
 package com.alescher.chessplayerserver.model;
 
-import com.alescher.chessplayerserver.helper.BoardUtility;
-
-import java.awt.Point;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,20 +31,20 @@ public class Pawn extends ChessPiece
 	@Override
 	public boolean checkMove(Point moveTo)
 	{
-		updateDidMove(position);
+		updateDidMove();
 		// Check that we are moving in the correct direction
-		if (direction == Direction.DOWN && position.y >= moveTo.y)
+		if (direction == Direction.DOWN && getPosition().y >= moveTo.y)
 			return false;
-		if (direction == Direction.UP && position.y <= moveTo.y)
+		if (direction == Direction.UP && getPosition().y <= moveTo.y)
 			return false;
 
-		if (position.x == moveTo.x) // Pawn is moving forward
+		if (getPosition().x == moveTo.x) // Pawn is moving forward
 		{
-			return checkMoveForward(position, moveTo, getGameBoard());
+			return checkMoveForward(moveTo, getGameBoard());
 		}
-		else if (Math.abs(position.x - moveTo.x) == 1) // Pawn is capturing
+		else if (Math.abs(getPosition().x - moveTo.x) == 1) // Pawn is capturing
 		{
-			return checkCapture(position, moveTo, getGameBoard());
+			return checkCapture(moveTo, getGameBoard());
 		}
 
 		return false;
@@ -56,6 +54,7 @@ public class Pawn extends ChessPiece
 	public List<Point> calculatePossibleMoves()
 	{
 		int direction = (this.direction == Direction.DOWN) ? 1 : -1;
+		Point position = getPosition();
 		// All the moves a pawn can generally make
 		List<Point> possibleMoves = new ArrayList<>();
 		possibleMoves.add(new Point(position.x, position.y + direction));
@@ -68,9 +67,9 @@ public class Pawn extends ChessPiece
 	}
 
 	// Checks whether the pawn can move forward, considering the direction he is facing
-	private boolean checkMoveForward(Point from, Point to, ChessPiece[][] gameBoard)
+	private boolean checkMoveForward(Point to, ChessPiece[][] gameBoard)
 	{
-		final int distance = Math.abs(from.y - to.y);
+		final int distance = Math.abs(getPosition().y - to.y);
 
 		if (distance > 2) // Pawns can move at most 2 tiles forward
 			return false;
@@ -83,9 +82,9 @@ public class Pawn extends ChessPiece
 	}
 
 	// Checks whether the pawn can capture a piece, considering the direction he is facing
-	private boolean checkCapture(Point from, Point to, ChessPiece[][] gameBoard)
+	private boolean checkCapture(Point to, ChessPiece[][] gameBoard)
 	{
-		if (Math.abs(from.y - to.y) > 1) // Must move vertically when capturing
+		if (Math.abs(getPosition().y - to.y) > 1) // Must move vertically when capturing
 			return false;
 		if (gameBoard[to.y][to.x] == null) // We cannot capture on an empty tile
 			return false;
@@ -94,11 +93,11 @@ public class Pawn extends ChessPiece
 	}
 
 	// Check if this pawn has moved before
-	private void updateDidMove(Point moveFrom)
+	private void updateDidMove()
 	{
 		// The row that this pawn was at the beginning of the game
 		int startingRow = (this.direction == Direction.DOWN) ? 1 : 6;
-		this.didMove = moveFrom.y != startingRow;
+		this.didMove = getPosition().y != startingRow;
 	}
 
 	@Override
@@ -110,6 +109,6 @@ public class Pawn extends ChessPiece
 	@Override
 	public String toString()
 	{
-		return "P";
+		return getColor() == Color.WHITE ? "P" : "p";
 	}
 }
