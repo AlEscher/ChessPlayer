@@ -131,7 +131,8 @@ public class ChessGame
 			}
 			if (Character.isDigit(c))
 			{
-				file += Character.getNumericValue(c);
+				int count = Character.getNumericValue(c);
+				for (int i = 0; i < count; i++) game.gameBoard[rank][file++] = null;
 			} else if (c == '/')
 			{
 				file = 0;
@@ -190,6 +191,11 @@ public class ChessGame
 				.stream()
 				.filter(move -> isLegalMove(piece.getPosition(), move, false))
 				.toList();
+	}
+
+	public List<String> getLegalMoveTiles(@NotNull Point moveFrom)
+	{
+		return getLegalMoves(moveFrom).stream().map(ChessPositionConverter::pointToTile).toList();
 	}
 
 	/**
@@ -451,6 +457,11 @@ public class ChessGame
 	public CheckUtility getCheckUtility()
 	{
 		return checkUtility;
+	}
+
+	public ChessPiece getPiece(String tile)
+	{
+		return getPiece(ChessPositionConverter.tileToPoint(tile));
 	}
 
 }
