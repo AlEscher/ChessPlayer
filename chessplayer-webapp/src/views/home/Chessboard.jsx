@@ -50,6 +50,14 @@ export function movePiece(data) {
             playRandomSound("moveSound");
         }
         target.appendChild(document.getElementById(sourceId));
+        if (data.extraMoves && Object.keys(data.extraMoves).length > 0)
+        {
+            const from = Object.keys(data.extraMoves)[0];
+            const to = data.extraMoves[from];
+            const fromTile = document.getElementById(from);
+            const toTile = document.getElementById(to);
+            toTile.appendChild(fromTile.childNodes[0]);
+        }
     }
 }
 

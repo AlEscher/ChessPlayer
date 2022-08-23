@@ -22,8 +22,8 @@ public class ChessGame
 	// TODO:
 	//  - Castling:
 	//      - Move rook (Frontend)
-	//      - Handle situation when rook / king moves without castling
 	//  - FEN support
+	//      - fromFEN (Frontend & Backend)
 	//  - Tests
 	//  - Promoting
 	//  - Stalemate
@@ -64,7 +64,8 @@ public class ChessGame
 				if (piece == null)
 				{
 					emptyTiles++;
-				} else {
+				} else
+				{
 					if (emptyTiles != 0)
 					{
 						fen.append(emptyTiles);
@@ -138,15 +139,17 @@ public class ChessGame
 	 * After the move is performed, it is checked whether the move resulted in a checkmate.
 	 * @param fromTile The starting tile
 	 * @param toTile The destination tile
+	 * @return An optional map of additional moves that need to be performed (e.g. for a castle)
 	 */
-	public void performMove(@NotNull String fromTile, @NotNull String toTile)
+	public Optional<Map<String, String>> performMove(@NotNull String fromTile, @NotNull String toTile)
 	{
-		Point from = ChessPositionConverter.convertTileToPoint(fromTile);
-		Point to = ChessPositionConverter.convertTileToPoint(toTile);
-		handleCastle(from, to);
+		Point from = ChessPositionConverter.tileToPoint(fromTile);
+		Point to = ChessPositionConverter.tileToPoint(toTile);
+		Optional<Map<String, String>> extraMove = handleCastle(from, to);
 		simulateMove(from, to);
 		swapTurn();
 		checkUtility.detectCheckMate().ifPresent(this::handleCheckMate);
+		return extraMove;
 	}
 
 	/**
@@ -160,8 +163,8 @@ public class ChessGame
 	{
 		if (gameOver) return false;
 
-		Point fromPoint = ChessPositionConverter.convertTileToPoint(fromTile);
-		Point toPoint = ChessPositionConverter.convertTileToPoint(toTile);
+		Point fromPoint = ChessPositionConverter.tileToPoint(fromTile);
+		Point toPoint = ChessPositionConverter.tileToPoint(toTile);
 
 		logger.info(String.format("Checking move from %s to %s", fromPoint, toPoint));
 		// Check bounds
@@ -313,20 +316,28 @@ public class ChessGame
 	 * Assumes that the move is legal.
 	 * @param from The point from where the piece is moving
 	 * @param to The point to which the piece is moving
+	 * @return An optional pair containing the tile from where the rook moved and to where it moved
 	 */
-	private void handleCastle(Point from, Point to)
+	private Optional<Map<String, String>> handleCastle(Point from, Point to)
 	{
 		ChessPiece piece = getPiece(from);
+		Optional<Map<String, String>> extraMoves = Optional.empty();
 		if (piece instanceof King king)
 		{
 			if (to.x - from.x == 2)
 			{
 				// Move the king side rook 2 to the left
-				simulateMove(new Point(from.x + 3, from.y), new Point(from.x + 1, from.y), false);
+				Point fromRook = new Point(from.x + 3, from.y);
+				Point toRook = new Point(from.x + 1, from.y);
+				simulateMove(fromRook, toRook, false);
+				extraMoves = Optional.of(Map.of(ChessPositionConverter.pointToTile(fromRook), ChessPositionConverter.pointToTile(toRook)));
 			} else if (to.x - from.x == -2)
 			{
 				// Move the queen side rook 3 to the right
-				simulateMove(new Point(from.x - 4, from.y), new Point(from.x - 1, from.y), false);
+				Point fromRook = new Point(from.x - 4, from.y);
+				Point toRook = new Point(from.x - 1, from.y);
+				simulateMove(fromRook, toRook, false);
+				extraMoves = Optional.of(Map.of(ChessPositionConverter.pointToTile(fromRook), ChessPositionConverter.pointToTile(toRook)));
 			}
 			// If the king has moved, castling is not possible anymore
 			king.removeCastleOption(Castle.KINGSIDE, Castle.QUEENSIDE);
@@ -340,6 +351,8 @@ public class ChessGame
 				blackKing.removeCastleOption(rook.getSide());
 			}
 		}
+
+		return extraMoves;
 	}
 
 	@Override

@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.awt.*;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @RestController
 public class ChessplayerController
@@ -62,11 +60,12 @@ public class ChessplayerController
 		ChessGame board = this.games.get(id);
 
 		boolean isLegal = board.isLegalMove(moveRequest.getFromTile(), moveRequest.getToTile());
+		Optional<Map<String, String>> extraMoves = Optional.empty();
 		if (isLegal)
 		{
-			board.performMove(moveRequest.getFromTile(), moveRequest.getToTile());
+			extraMoves = board.performMove(moveRequest.getFromTile(), moveRequest.getToTile());
 		}
-		MoveResponseEntity moveResponse = MoveResponseEntity.create(moveRequest, isLegal, null, board);
+		MoveResponseEntity moveResponse = MoveResponseEntity.create(moveRequest, isLegal, null, board, extraMoves);
 		logger.info("Sending move response: {}", moveResponse);
 
 		return moveResponse;
@@ -78,11 +77,11 @@ public class ChessplayerController
 		logger.info("Received request to generate moves for {} on {}", pieceID, fromTile);
 		ChessGame board = this.games.get(id);
 
-		Point moveFrom = ChessPositionConverter.convertTileToPoint(fromTile);
+		Point moveFrom = ChessPositionConverter.tileToPoint(fromTile);
 		// Get all legal moves and convert them to chess coordinates
 		List<String> possibleMoves = board.getLegalMoves(moveFrom)
 				.stream()
-				.map(ChessPositionConverter::convertPointToTile)
+				.map(ChessPositionConverter::pointToTile)
 				.toList();
 
 		MoveResponseEntity moveResponse = MoveResponseEntity.create(fromTile, pieceID, possibleMoves, board);
@@ -91,7 +90,7 @@ public class ChessplayerController
 		return moveResponse;
 	}
 
-	@GetMapping(path="/game/{id}/get-fen")
+	@GetMapping(path="/game/{id}/fen")
 	public String getFenCode(@PathVariable String id)
 	{
 		logger.info("Received request to generate FEN for {}", id);

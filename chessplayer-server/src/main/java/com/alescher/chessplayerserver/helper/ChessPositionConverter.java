@@ -19,7 +19,7 @@ public class ChessPositionConverter
 	 * @return The corresponding 2D coordinate
 	 * @throws IllegalArgumentException
 	 */
-	public static Point convertTileToPoint(@NotNull String chessTile) throws IllegalArgumentException
+	public static Point tileToPoint(@NotNull String chessTile) throws IllegalArgumentException
 	{
 		if (chessTile.length() != 2)
 			throw new IllegalArgumentException("A chess tile should only have 2 characters, e.g. \"A1\"");
@@ -40,7 +40,7 @@ public class ChessPositionConverter
 	 * @param point The 2D point
 	 * @return The corresponding chess coordinate, e.g. "A1"
 	 */
-	public static String convertPointToTile(@NotNull Point point)
+	public static String pointToTile(@NotNull Point point)
 	{
 		StringBuilder tile = new StringBuilder();
 		tile.append((char)(point.x + 65));  // A => 65, H => 72
