@@ -14,10 +14,10 @@ public class Pawn extends ChessPiece
 	private boolean didMove = false;
 	private final Direction direction;
 
-	public Pawn(Color color, Direction direction, Point position, ChessGame game)
+	public Pawn(Color color, Point position, ChessGame game)
 	{
 		super(color, position, game);
-		this.direction = direction;
+		this.direction = (color == Color.WHITE) ? Direction.UP : Direction.DOWN;
 	}
 
 	/**

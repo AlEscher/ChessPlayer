@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import java.awt.Point;
 import java.util.*;
@@ -105,6 +106,63 @@ public class ChessGame
 		fen.append(1 + pastMoves.stream().filter(move -> move.getMoveColor() == Color.BLACK).count());
 
 		return fen.toString();
+	}
+
+	/**
+	 * Create a ChessGame instance from a FEN string
+	 * @param fen The FEN string
+	 * @return A ChessGame instance derived from the FEN
+	 * @throws IllegalArgumentException in case of malformed FEN string
+	 * @see {@link <a href="https://www.chess.com/terms/fen-chess">FEN</a>}
+	 */
+	public static ChessGame fromFEN(@NotNull String fen) throws IllegalArgumentException
+	{
+		ChessGame game = new ChessGame();
+		// rank -> y; file -> x
+		int rank = 0, file = 0;
+		String[] sections = fen.split(" ");
+		Assert.state(sections.length == 6, "Malformed FEN string");
+		// Parse positions
+		for (char c : sections[0].toCharArray())
+		{
+			if (file > 7)
+			{
+				file = 0;
+			}
+			if (Character.isDigit(c))
+			{
+				file += Character.getNumericValue(c);
+			} else if (c == '/')
+			{
+				file = 0;
+				rank++;
+			} else
+			{
+				Color color = Character.isUpperCase(c) ? Color.WHITE : Color.BLACK;
+				Point position = new Point(file, rank);
+				ChessPieceFactory pieceFactory = switch(Character.toUpperCase(c))
+				{
+					case 'B' -> Bishop::new;
+					case 'K' -> King::new;
+					case 'N' -> Knight::new;
+					case 'P' -> Pawn::new;
+					case 'Q' -> Queen::new;
+					case 'R' -> Rook::new;
+					default -> throw new IllegalArgumentException("Unknown piece specifier " + c);
+				};
+				game.gameBoard[rank][file] = pieceFactory.create(color, position, game);
+				file++;
+			}
+		}
+		// Parse current turn
+		game.currentTurn = sections[1].equals("w") ? Color.WHITE : Color.BLACK;
+		// Parse castling rights
+		if (!sections[2].contains("K")) game.whiteKing.removeCastleOption(Castle.KINGSIDE);
+		if (!sections[2].contains("Q")) game.whiteKing.removeCastleOption(Castle.QUEENSIDE);
+		if (!sections[2].contains("k")) game.blackKing.removeCastleOption(Castle.KINGSIDE);
+		if (!sections[2].contains("q")) game.blackKing.removeCastleOption(Castle.QUEENSIDE);
+
+		return game;
 	}
 
 	/**
@@ -275,8 +333,8 @@ public class ChessGame
 	{
 		for (int i = 0; i < 8; i++)
 		{
-			gameBoard[6][i] = new Pawn(Color.WHITE, Pawn.Direction.UP, new Point(i, 6), this);
-			gameBoard[1][i] = new Pawn(Color.BLACK, Pawn.Direction.DOWN, new Point(i, 1), this);
+			gameBoard[6][i] = new Pawn(Color.WHITE, new Point(i, 6), this);
+			gameBoard[1][i] = new Pawn(Color.BLACK, new Point(i, 1), this);
 		}
 		gameBoard[0][0] = new Rook(Color.BLACK, new Point(0, 0), this);
 		gameBoard[0][1] = new Knight(Color.BLACK, new Point(1, 0), this);

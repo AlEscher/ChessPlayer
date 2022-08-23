@@ -25,7 +25,7 @@ module.exports = {
     "react/jsx-filename-extension": 0,
     "quotes": 0,
     "react/jsx-indent": 0,
-    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "no-plusplus": 0,
     "no-use-before-define": ["error", { "functions": false, "classes": true, "variables": true }],
     "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
   },

@@ -1,7 +1,10 @@
 import React from 'react';
 import TileRow from './TileRow';
-import { colMappings } from '../../helpers';
+import { getTileId } from '../../helpers';
 import { playRandomSound } from '../../components/audio';
+
+const black = "dimgrey";
+const white = "white";
 
 /**
  * Creates and returns the chessboard that will be displayed to the user
@@ -17,15 +20,6 @@ export default function ChessBoard() {
     return (
         <div>{ chessboard }</div>
     );
-}
-
-/**
- * Add the chess pieces to the chessboard
- */
-export function setupChessboard()
-{
-    setupBlackPieces();
-    setupWhitePieces();
 }
 
 /**
@@ -72,50 +66,69 @@ export function handleMoves(data) {
     );
 }
 
-function setupBlackPieces()
+/**
+ * Add the chess pieces to the chessboard
+ */
+export function setupChessboard()
 {
-    const rookL = createPiece("R", "b_rook_l", "dimgrey");
-    const rookR = createPiece("R", "b_rook_r", "dimgrey");
-    const knightR = createPiece("N", "b_knight_r", "dimgrey");
-    const knightL = createPiece("N", "b_knight_l", "dimgrey");
-    const bishopL = createPiece("B", "b_bishop_l", "dimgrey");
-    const bishopR = createPiece("B", "b_bishop_r", "dimgrey");
-    const queen = createPiece("Q", "b_queen", "dimgrey");
-    const king = createPiece("K", "b_king", "dimgrey");
-
-    document.getElementById("A8").appendChild(rookL);
-    document.getElementById("B8").appendChild(knightL);
-    document.getElementById("C8").appendChild(bishopL);
-    document.getElementById("D8").appendChild(queen);
-    document.getElementById("E8").appendChild(king);
-    document.getElementById("F8").appendChild(bishopR);
-    document.getElementById("G8").appendChild(knightR);
-    document.getElementById("H8").appendChild(rookR);
-
-    setupPawns("dimgrey", 7);
+    const fenString = sessionStorage.game_fen;
+    parseFen(fenString);
 }
 
-function setupWhitePieces()
+function parseFen(fen)
 {
-    const rookL = createPiece("R", "w_rook_l", "white");
-    const rookR = createPiece("R", "w_rook_r", "white");
-    const knightR = createPiece("N", "w_knight_r", "white");
-    const knightL = createPiece("N", "w_knight_l", "white");
-    const bishopL = createPiece("B", "w_bishop_l", "white");
-    const bishopR = createPiece("B", "w_bishop_r", "white");
-    const queen = createPiece("Q", "w_queen", "white");
-    const king = createPiece("K", "w_king", "white");
-
-    document.getElementById("A1").appendChild(rookL);
-    document.getElementById("B1").appendChild(knightL);
-    document.getElementById("C1").appendChild(bishopL);
-    document.getElementById("D1").appendChild(queen);
-    document.getElementById("E1").appendChild(king);
-    document.getElementById("F1").appendChild(bishopR);
-    document.getElementById("G1").appendChild(knightR);
-    document.getElementById("H1").appendChild(rookR);
-
-    setupPawns("white", 2);
+    const positionSection = fen.split(" ")[0];
+    // rank -> row; file -> column
+    let rank = 0; let file = 0;
+    // eslint-disable-next-line one-var-declaration-per-line
+    let bishops = 0; let knights = 0; let pawns = 0; let rooks = 0;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const c of positionSection)
+    {
+        if (file > 7)
+        {
+            file = 0;
+        } if (!Number.isNaN(parseInt(c, 10)))
+        {
+            file += parseInt(c, 10);
+        } else if (c === '/')
+        {
+            file = 0;
+            rank += 1;
+        } else
+        {
+            const color = c.toUpperCase() === c ? white : black;
+            const position = getTileId(rank, file);
+            let id = "";
+            const prefix = color === white ? "w" : "b";
+            switch (c.toUpperCase())
+            {
+                case 'B':
+                    id = `${prefix}_bishop${bishops++}`;
+                    break;
+                case 'K':
+                    id = `${prefix}_king`;
+                    break;
+                case 'N':
+                    id = `${prefix}_knight${knights++}`;
+                    break;
+                case 'P':
+                    id = `${prefix}_pawn${pawns++}`;
+                    break;
+                case 'Q':
+                    id = `${prefix}_queen`;
+                    break;
+                case 'R':
+                    id = `${prefix}_rook${rooks++}`;
+                    break;
+                default:
+                    console.log("Invalid piece identifier!");
+                    return;
+            }
+            document.getElementById(position).appendChild(createPiece(c.toUpperCase(), id, color));
+            file += 1;
+        }
+    }
 }
 
 function createPiece(name, id, color)
@@ -127,13 +140,4 @@ function createPiece(name, id, color)
     piece.draggable = true;
     piece.classList.add("piece");
     return piece;
-}
-
-function setupPawns(color, row)
-{
-    const prefix = color === "white" ? "w_" : "b_";
-    for (let i = 0; i < 8; i++)
-    {
-        document.getElementById(`${colMappings[i]}${row}`).appendChild(createPiece("P", `${prefix}pawn${i}`, color));
-    }
 }
