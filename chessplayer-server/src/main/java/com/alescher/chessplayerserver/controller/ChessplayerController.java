@@ -79,10 +79,7 @@ public class ChessplayerController
 
 		Point moveFrom = ChessPositionConverter.tileToPoint(fromTile);
 		// Get all legal moves and convert them to chess coordinates
-		List<String> possibleMoves = board.getLegalMoves(moveFrom)
-				.stream()
-				.map(ChessPositionConverter::pointToTile)
-				.toList();
+		List<String> possibleMoves = board.getLegalMoveTiles(moveFrom);
 
 		MoveResponseEntity moveResponse = MoveResponseEntity.create(fromTile, pieceID, possibleMoves, board);
 		logger.info("Sending response: {}", moveResponse);
