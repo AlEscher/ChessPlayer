@@ -30,16 +30,18 @@ public class FenTest
 	public void testFromFenPosition()
 	{
 		game = ChessGame.fromFEN("2kr1b1r/p1p1ppp1/1pnq3p/8/3PP3/2P3PN/PP1BQ1P1/RN2K2R b KQ - 0 13");
-		String expectedString = "\n_________________________________\n" +
-						"|   |   | k | r |   | b |   | r |\n" +
-						"| p |   | p |   | p | p | p |   |\n" +
-						"|   | p | n | q |   |   |   | p |\n" +
-						"|   |   |   |   |   |   |   |   |\n" +
-						"|   |   |   | P | P |   |   |   |\n" +
-						"|   |   | P |   |   |   | P | N |\n" +
-						"| P | P |   | B | Q |   | P |   |\n" +
-						"| R | N |   |   | K |   |   | R |\n" +
-						"---------------------------------";
+		String expectedString = """
+
+				_________________________________
+				|   |   | k | r |   | b |   | r |
+				| p |   | p |   | p | p | p |   |
+				|   | p | n | q |   |   |   | p |
+				|   |   |   |   |   |   |   |   |
+				|   |   |   | P | P |   |   |   |
+				|   |   | P |   |   |   | P | N |
+				| P | P |   | B | Q |   | P |   |
+				| R | N |   |   | K |   |   | R |
+				---------------------------------""";
 		String actualString = game.toString();
 		assertThat(actualString).isEqualTo(expectedString);
 	}
