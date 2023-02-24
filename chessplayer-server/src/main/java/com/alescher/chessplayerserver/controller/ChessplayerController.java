@@ -2,6 +2,7 @@ package com.alescher.chessplayerserver.controller;
 
 import com.alescher.chessplayerserver.helper.ChessPositionConverter;
 import com.alescher.chessplayerserver.model.ChessGame;
+import com.alescher.chessplayerserver.model.MoveResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -59,13 +60,8 @@ public class ChessplayerController
 		logger.info("Received request to make move: {}", moveRequest);
 		ChessGame board = this.games.get(id);
 
-		boolean isLegal = board.isLegalMove(moveRequest.getFromTile(), moveRequest.getToTile());
-		Optional<Map<String, String>> extraMoves = Optional.empty();
-		if (isLegal)
-		{
-			extraMoves = board.performMove(moveRequest.getFromTile(), moveRequest.getToTile());
-		}
-		MoveResponseEntity moveResponse = MoveResponseEntity.create(moveRequest, isLegal, null, board, extraMoves);
+		MoveResult result = board.performMove(moveRequest.getFromTile(), moveRequest.getToTile());
+		MoveResponseEntity moveResponse = MoveResponseEntity.create(moveRequest, result.legal(), null, board, result.extraMoves());
 		logger.info("Sending move response: {}", moveResponse);
 
 		return moveResponse;

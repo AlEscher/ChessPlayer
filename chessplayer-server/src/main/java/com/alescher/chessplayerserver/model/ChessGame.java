@@ -44,7 +44,7 @@ public class ChessGame
 		this.gameBoard = new ChessPiece[8][8];
 		setupBoard();
 		this.pastMoves = new Stack<>();
-		this.checkUtility = new CheckUtility(this, gameBoard, gameBoard[0][4], gameBoard[7][4]);
+		this.checkUtility = new CheckUtility(this, gameBoard);
 		this.currentTurn = Color.WHITE;
 	}
 
@@ -151,7 +151,10 @@ public class ChessGame
 					case 'R' -> Rook::new;
 					default -> throw new IllegalArgumentException("Unknown piece specifier " + c);
 				};
-				game.gameBoard[rank][file] = pieceFactory.create(color, position, game);
+				ChessPiece piece = pieceFactory.create(color, position, game);
+				game.gameBoard[rank][file] = piece;
+				game.whiteKing = (piece instanceof King && piece.getColor() == Color.WHITE) ? (King) piece : game.whiteKing;
+				game.whiteKing = (piece instanceof King && piece.getColor() == Color.BLACK) ? (King) piece : game.whiteKing;
 				file++;
 			}
 		}
@@ -205,15 +208,20 @@ public class ChessGame
 	 * @param toTile The destination tile
 	 * @return An optional map of additional moves that need to be performed (e.g. for a castle)
 	 */
-	public Optional<Map<String, String>> performMove(@NotNull String fromTile, @NotNull String toTile)
+	public MoveResult performMove(@NotNull String fromTile, @NotNull String toTile)
 	{
 		Point from = ChessPositionConverter.tileToPoint(fromTile);
 		Point to = ChessPositionConverter.tileToPoint(toTile);
-		Optional<Map<String, String>> extraMove = handleCastle(from, to);
-		simulateMove(from, to);
-		swapTurn();
-		checkUtility.detectCheckMate().ifPresent(this::handleCheckMate);
-		return extraMove;
+		boolean isLegal = isLegalMove(fromTile, toTile);
+		Optional<Map<String, String>> extraMove = Optional.empty();
+		if (isLegal)
+		{
+			extraMove = handleCastle(from, to);
+			simulateMove(from, to);
+			swapTurn();
+			checkUtility.detectCheckMate().ifPresent(this::handleCheckMate);
+		}
+		return new MoveResult(isLegal, extraMove);
 	}
 
 	/**
@@ -462,6 +470,16 @@ public class ChessGame
 	public ChessPiece getPiece(String tile)
 	{
 		return getPiece(ChessPositionConverter.tileToPoint(tile));
+	}
+
+	public King getWhiteKing()
+	{
+		return whiteKing;
+	}
+
+	public King getBlackKing()
+	{
+		return blackKing;
 	}
 
 }
