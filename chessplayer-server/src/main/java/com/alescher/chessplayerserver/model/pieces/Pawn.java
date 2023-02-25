@@ -1,4 +1,8 @@
-package com.alescher.chessplayerserver.model;
+package com.alescher.chessplayerserver.model.pieces;
+
+import com.alescher.chessplayerserver.model.ChessGame;
+import com.alescher.chessplayerserver.model.Color;
+import com.alescher.chessplayerserver.model.pieces.ChessPiece;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -14,10 +18,10 @@ public class Pawn extends ChessPiece
 	private boolean didMove = false;
 	private final Direction direction;
 
-	public Pawn(Color color, Point position, ChessGame game)
+	public Pawn(com.alescher.chessplayerserver.model.Color color, Point position, ChessGame game)
 	{
 		super(color, position, game);
-		this.direction = (color == Color.WHITE) ? Direction.UP : Direction.DOWN;
+		this.direction = (color == com.alescher.chessplayerserver.model.Color.WHITE) ? Direction.UP : Direction.DOWN;
 	}
 
 	/**

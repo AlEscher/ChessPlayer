@@ -1,4 +1,8 @@
-package com.alescher.chessplayerserver.model;
+package com.alescher.chessplayerserver.model.pieces;
+
+import com.alescher.chessplayerserver.model.ChessGame;
+import com.alescher.chessplayerserver.model.Color;
+import com.alescher.chessplayerserver.model.pieces.ChessPiece;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -6,7 +10,7 @@ import java.util.List;
 
 public class Knight extends ChessPiece
 {
-	public Knight(Color color, Point position, ChessGame game)
+	public Knight(com.alescher.chessplayerserver.model.Color color, Point position, ChessGame game)
 	{
 		super(color, position, game);
 	}

@@ -1,6 +1,8 @@
-package com.alescher.chessplayerserver.model;
+package com.alescher.chessplayerserver.model.pieces;
 
 import com.alescher.chessplayerserver.helper.BoardUtility;
+import com.alescher.chessplayerserver.model.ChessGame;
+import com.alescher.chessplayerserver.model.Color;
 
 import java.awt.Point;
 import java.util.List;

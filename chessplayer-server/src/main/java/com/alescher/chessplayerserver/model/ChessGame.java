@@ -4,6 +4,7 @@ import com.alescher.chessplayerserver.helper.BoardUtility;
 import com.alescher.chessplayerserver.helper.CheckUtility;
 import com.alescher.chessplayerserver.helper.ChessPositionConverter;
 import com.alescher.chessplayerserver.helper.Move;
+import com.alescher.chessplayerserver.model.pieces.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -480,6 +481,11 @@ public class ChessGame
 	public King getBlackKing()
 	{
 		return blackKing;
+	}
+
+	public boolean isGameOver()
+	{
+		return gameOver;
 	}
 
 }

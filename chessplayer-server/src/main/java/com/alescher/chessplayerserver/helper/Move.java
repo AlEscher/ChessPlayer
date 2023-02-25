@@ -1,6 +1,6 @@
 package com.alescher.chessplayerserver.helper;
 
-import com.alescher.chessplayerserver.model.ChessPiece;
+import com.alescher.chessplayerserver.model.pieces.ChessPiece;
 import com.alescher.chessplayerserver.model.Color;
 import org.jetbrains.annotations.Nullable;
 

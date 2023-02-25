@@ -1,6 +1,6 @@
 package com.alescher.chessplayerserver.helper;
 
-import com.alescher.chessplayerserver.model.ChessPiece;
+import com.alescher.chessplayerserver.model.pieces.ChessPiece;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -78,9 +78,9 @@ public class BoardUtility
 	 */
 	public static boolean checkPathUnobstructed(Point moveFrom, Point moveTo, ChessPiece[][] gameBoard)
 	{
-		Point direction = new Point(moveTo.x - moveFrom.x, moveTo.y - moveFrom.y);
+		Point direction = getDirectionalVector(moveFrom, moveTo);
 		double length = Math.max(Math.abs(direction.x), Math.abs(direction.y));
-		normalizeDirectionalVector(direction);
+		direction = normalizeDirectionalVector(direction);
 
 		for (int i = 1; i < length; i++)
 		{
@@ -174,13 +174,15 @@ public class BoardUtility
 	 * For the chessboard, directional vectors can only be horizontal, vertical or diagonal
 	 * @param direction The directional vector to be normalized
 	 */
-	public static void normalizeDirectionalVector(Point direction)
+	public static Point normalizeDirectionalVector(Point direction)
 	{
+		Point normalizedDirection = new Point(direction);
 		// If we are walking diagonally, direction.x and direction.y will be the length.
 		// If we are walking horizontally / vertically, then the value != 0 will be the length.
-		double length = Math.max(Math.abs(direction.x), Math.abs(direction.y));
-		direction.x /= length;
-		direction.y /= length;
+		double length = Math.max(Math.abs(normalizedDirection.x), Math.abs(normalizedDirection.y));
+		normalizedDirection.x /= length;
+		normalizedDirection.y /= length;
+		return normalizedDirection;
 	}
 
 	/**
@@ -191,5 +193,10 @@ public class BoardUtility
 	public static Stream<ChessPiece> getAllPieces(ChessPiece[][] gameBoard)
 	{
 		return Arrays.stream(gameBoard).flatMap(Arrays::stream);
+	}
+
+	public static Point getDirectionalVector(Point from, Point to)
+	{
+		return new Point(to.x - from.x, to.y - from.y);
 	}
 }

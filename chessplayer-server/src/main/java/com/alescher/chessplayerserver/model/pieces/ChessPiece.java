@@ -1,7 +1,9 @@
-package com.alescher.chessplayerserver.model;
+package com.alescher.chessplayerserver.model.pieces;
 
 import com.alescher.chessplayerserver.helper.BoardUtility;
 import com.alescher.chessplayerserver.helper.CheckUtility;
+import com.alescher.chessplayerserver.model.ChessGame;
+import com.alescher.chessplayerserver.model.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

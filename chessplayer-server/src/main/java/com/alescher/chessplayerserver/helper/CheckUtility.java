@@ -1,6 +1,8 @@
 package com.alescher.chessplayerserver.helper;
 
 import com.alescher.chessplayerserver.model.*;
+import com.alescher.chessplayerserver.model.pieces.ChessPiece;
+import com.alescher.chessplayerserver.model.pieces.King;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -46,10 +48,7 @@ public class CheckUtility
 		if (gameBoard[from.y][from.x] instanceof King && Math.abs(from.x - to.x) > 1)
 		{
 			// King is castling, a king cannot castle if it is checked or is castling "through" a check
-			if (!isCastleLegal(from, to))
-			{
-				return false;
-			}
+			return isCastleLegal(from, to);
 		}
 		// Simulate the move to see if any player's king is checked
 		chessGame.simulateMove(from, to, false);
@@ -207,6 +206,22 @@ public class CheckUtility
 			legal = false;
 		}
 		resetState(backup);
+		Point direction = BoardUtility.normalizeDirectionalVector(BoardUtility.getDirectionalVector(from, to));
+		// Points from the king's current position to where he will castle
+		List<Point> intermediateMoves = BoardUtility.generatePossibleMoves(from, List.of(direction), king, gameBoard);
+		for (Point moveTo : intermediateMoves)
+		{
+			// Simulate each intermediate move and check if any enemy piece would be attacking that square
+			chessGame.simulateMove(from, moveTo, false);
+			updateState();
+			boolean underCheck = (king.isWhite() && isWhiteChecked()) || king.isBlack() && isBlackChecked();
+			if (underCheck)
+			{
+				return false;
+			}
+			chessGame.undoMove();
+			resetState(backup);
+		}
 		return legal;
 	}
 

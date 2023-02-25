@@ -2,6 +2,9 @@ package com.alescher.chessplayerserver;
 
 import com.alescher.chessplayerserver.helper.ChessPositionConverter;
 import com.alescher.chessplayerserver.model.*;
+import com.alescher.chessplayerserver.model.pieces.ChessPiece;
+import com.alescher.chessplayerserver.model.pieces.King;
+import com.alescher.chessplayerserver.model.pieces.Rook;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
