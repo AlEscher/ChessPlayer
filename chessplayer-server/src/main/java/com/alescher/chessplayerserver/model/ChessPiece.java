@@ -88,6 +88,16 @@ public abstract class ChessPiece
 		this.position = position;
 	}
 
+	public boolean isWhite()
+	{
+		return getColor() == Color.WHITE;
+	}
+
+	public boolean isBlack()
+	{
+		return getColor() == Color.BLACK;
+	}
+
 	protected abstract List<Point> calculatePossibleMoves();
 
 	protected abstract boolean checkMove(Point to);

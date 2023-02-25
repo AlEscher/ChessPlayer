@@ -19,24 +19,14 @@ public class CheckUtility
 {
 	private final ChessGame chessGame;
 	private final ChessPiece[][] gameBoard;
-	private final King whiteKing;
-	private final King blackKing;
+	// White pieces that are attacking the black king
 	private List<ChessPiece> whiteAttackers;
+	// Black pieces that are attacking the white king
 	private List<ChessPiece> blackAttackers;
 	private static final Logger logger = LoggerFactory.getLogger(CheckUtility.class);
 
-	public CheckUtility(ChessGame chessGame, ChessPiece[][] gameBoard, ChessPiece king1, ChessPiece king2)
+	public CheckUtility(ChessGame chessGame, ChessPiece[][] gameBoard)
 	{
-		if (king1.getColor() == Color.WHITE)
-		{
-			this.whiteKing = (King)king1;
-			this.blackKing = (King)king2;
-		}
-		else
-		{
-			this.blackKing = (King)king1;
-			this.whiteKing = (King)king2;
-		}
 		this.chessGame = chessGame;
 		this.gameBoard = gameBoard;
 		this.whiteAttackers = new ArrayList<>();
@@ -53,6 +43,14 @@ public class CheckUtility
 	 */
 	public boolean isMoveLegal(Point from, Point to, boolean keepState)
 	{
+		if (gameBoard[from.y][from.x] instanceof King && Math.abs(from.x - to.x) > 1)
+		{
+			// King is castling, a king cannot castle if it is checked or is castling "through" a check
+			if (!isCastleLegal(from, to))
+			{
+				return false;
+			}
+		}
 		// Simulate the move to see if any player's king is checked
 		chessGame.simulateMove(from, to, false);
 		Assert.state(!(gameBoard[to.y][to.x].getColor() == Color.WHITE && isBlackChecked()),
@@ -85,7 +83,7 @@ public class CheckUtility
 	 * Checks if any player is checked after simulating a move and updates <code>whiteAttackers</code> and <code>blackAttackers</code>
 	 * accordingly.
 	 */
-	public void updateState()
+	private void updateState()
 	{
 		logger.info(String.format("Updating CheckUtility state. Current: %s", this));
 		// Check if a piece attacks a king of the opposite color
@@ -99,8 +97,6 @@ public class CheckUtility
 	}
 
 	/**
-	 * If any changes have been manually made to the board, {@link CheckUtility#updateState()}
-	 * should be called before this method is invoked.
 	 * @return <code>true</code> if white is currently checked
 	 */
 	public boolean isWhiteChecked()
@@ -109,8 +105,6 @@ public class CheckUtility
 	}
 
 	/**
-	 * If any changes have been manually made to the board, {@link CheckUtility#updateState()}
-	 * should be called before this method is invoked.
 	 * @return <code>true</code> if black is currently checked
 	 */
 	public boolean isBlackChecked()
@@ -143,8 +137,8 @@ public class CheckUtility
 
 		ChessPiece attackingPiece = gameBoard[from.y][from.x];
 		ChessPiece attackedPiece = gameBoard[to.y][to.x];
-		if ((attackedPiece.equals(whiteKing) && attackingPiece.getColor() == Color.BLACK)
-		 || (attackedPiece.equals(blackKing) && attackingPiece.getColor() == Color.WHITE))
+		if ((attackedPiece.equals(chessGame.getWhiteKing()) && attackingPiece.getColor() == Color.BLACK)
+		 || (attackedPiece.equals(chessGame.getBlackKing()) && attackingPiece.getColor() == Color.WHITE))
 		{
 			return Optional.of(attackedPiece);
 		}
@@ -199,6 +193,21 @@ public class CheckUtility
 		logger.info(String.format("%d attackers remain", remainingAttackers.size()));
 
 		return remainingAttackers.isEmpty();
+	}
+
+	private boolean isCastleLegal(Point from, Point to)
+	{
+		CheckState backup = new CheckState(whiteAttackers, blackAttackers);
+		King king = (King) gameBoard[from.y][from.x];
+		boolean legal = true;
+		updateState();
+		// King cannot castle if under check
+		if ((king.isWhite() && isWhiteChecked()) || king.isBlack() && isBlackChecked())
+		{
+			legal = false;
+		}
+		resetState(backup);
+		return legal;
 	}
 
 	/** Reset this objects internal state to a previously saved one */
