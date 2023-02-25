@@ -12,5 +12,6 @@ runs:
         java-version: '17'
         distribution: 'temurin'
     - name: Build & Test with Maven
+      working-directory: ./chessplayer-server
       shell: bash
       run: mvn --batch-mode --update-snapshots verify
