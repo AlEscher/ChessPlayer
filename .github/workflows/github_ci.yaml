@@ -3,9 +3,6 @@ on: [push]
 jobs:
   test-server:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./chessplayer-server
     steps:
       - uses: actions/checkout@v2
       - uses: ./chessplayer-server/.github/workflows/build_and_test
